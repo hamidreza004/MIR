@@ -25,11 +25,18 @@ def clean_raw(raw):
     return tokens
 
 
-df = pd.read_csv('data/ted_talks.csv')
-ted_talks = df[['description', 'title']]
+def read_ted_file(path):
+    df = pd.read_csv(path)
+    ted_df = df[['description', 'title']]
+    return ted_df
 
-for index, row in ted_talks.iterrows():
-    row['description'] = clean_raw(row['description'])
-    row['title'] = clean_raw(row['title'])
 
+def clean_file(df):
+    for index, row in df.iterrows():
+        row['description'] = clean_raw(row['description'])
+        row['title'] = clean_raw(row['title'])
+    return df
+
+
+ted_talks = clean_file(read_ted_file('data/ted_talks.csv'))
 print(ted_talks)
