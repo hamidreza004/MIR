@@ -3,12 +3,15 @@ import pandas as pd
 
 nltk.download('punkt')
 nltk.download('stopwords')
+nltk.download('wordnet')
 
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, SnowballStemmer
+from nltk import WordNetLemmatizer
 
 snowball = SnowballStemmer("english")
+lemma = WordNetLemmatizer()
 
 
 def clean_raw(raw):
@@ -16,6 +19,9 @@ def clean_raw(raw):
     tokens = [word for word in tokens if word.isalpha()]
     tokens = [word for word in tokens if not word in stopwords.words("english")]
     tokens = [snowball.stem(word) for word in tokens]
+    tokens = [lemma.lemmatize(word, pos="v") for word in tokens]
+    tokens = [lemma.lemmatize(word, pos="n") for word in tokens]
+
     return tokens
 
 
