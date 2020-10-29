@@ -7,7 +7,7 @@ nltk.download('wordnet')
 
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer, SnowballStemmer
+from nltk.stem import SnowballStemmer
 from nltk import WordNetLemmatizer
 
 snowball = SnowballStemmer("english")
