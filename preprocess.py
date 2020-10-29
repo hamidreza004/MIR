@@ -1,17 +1,17 @@
-import pandas as pd
-from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk.stem import PorterStemmer, SnowballStemmer
 import nltk
+import pandas as pd
 
 nltk.download('punkt')
+
+from nltk.tokenize import word_tokenize
 
 df = pd.read_csv('data/ted_talks.csv')
 ted_talks = df[['description', 'title']]
 
-print(sent_tokenize("salam khoobi"))
+print(word_tokenize("salam khoobi"))
 
 for index, row in ted_talks.iterrows():
-    row['description'] = sent_tokenize(row['description'].lower())
-    row['title'] = sent_tokenize(row['title'].lower())
+    row['description'] = word_tokenize(row['description'].lower())
+    row['title'] = word_tokenize(row['title'].lower())
 
 print(ted_talks)
