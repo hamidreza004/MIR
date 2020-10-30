@@ -30,14 +30,6 @@ class GammaCodeCompressor:
             compressed += '1'
         return self.to_3bit_binary(padding_amount) + compressed
 
-    def to_byte(self, bit_stream):
-        byte_stream = ""
-        i = 0
-        while i < len(bit_stream):
-            byte_stream += chr(int(bit_stream[i: i + 8], 2))
-            i += 8
-        return byte_stream
-
     def get_gamma_code(self, decimal_number):
         offset = self.get_binary_code(decimal_number)[1:]
         length = self.get_unary_code(len(offset))
@@ -66,6 +58,14 @@ class GammaCodeCompressor:
         for i in reversed(reversed_binary):
             binary += i
         return binary
+
+    def to_byte(self, bit_stream):
+        byte_stream = ""
+        i = 0
+        while i < len(bit_stream):
+            byte_stream += chr(int(bit_stream[i: i + 8], 2))
+            i += 8
+        return byte_stream
 
 
 class GammaCodeDecompressor:
@@ -118,10 +118,9 @@ class GammaCodeDecompressor:
             bit_stream += format(ord(byte), '08b')
         return bit_stream
 
-
-posting = [0, 10, 15]
-zipper = GammaCodeCompressor()
-print(zipper.get_compressed(posting, False))
-
-unzipper = GammaCodeDecompressor()
-print(unzipper.get_decompressed(zipper.get_compressed(posting, False), False))
+# posting = [0, 10, 15]
+# zipper = GammaCodeCompressor()
+# print(zipper.get_compressed(posting, False))
+#
+# unzipper = GammaCodeDecompressor()
+# print(unzipper.get_decompressed(zipper.get_compressed(posting, False), False))
