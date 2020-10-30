@@ -1,7 +1,9 @@
 import tkinter
 from tkinter import *
-
+from tkinter import filedialog
+import preprocess
 import tkinter as tk
+import pandas as pd
 
 
 class EntryWithPlaceholder(tk.Entry):
@@ -31,7 +33,20 @@ class EntryWithPlaceholder(tk.Entry):
             self.put_placeholder()
 
 
-def initial_window(window):
+def add_table(window, list):
+    for i in range(len(list)):
+        window.grid_columnconfigure(i, weight=1)
+    for i in range(len(list[0])):
+        window.grid_rowconfigure(i, weight=1)
+    for i in range(len(list[0])):
+        for j in range(len(list)):
+            e = Entry(window)
+            e.grid(row=i, column=j, padx=0, pady=0, ipadx=0, ipady=0, sticky=W + E + N + S)
+            e.insert(END, list[j][i])
+            e.config(state="readonly")
+
+
+def configure_size_window(window):
     window.title("MIR Project")
     window.geometry('840x500')
     window.grid_columnconfigure(1, weight=1)
@@ -47,10 +62,33 @@ def initial_window(window):
     window.grid_rowconfigure(7, weight=1)
     window.grid_rowconfigure(8, weight=1)
 
-    btn_CSV = Button(window, text="Prepare CSV documents")
+
+def configure_prepare_section(window):
+    def prepare_csv_clicked():
+        filename = filedialog.askopenfilename()
+        df = pd.read_csv(filename)
+        csv_df = df[['description', 'title']]
+        ted_talk, stop_words = preprocess.prepare_text(csv_df)
+        print(ted_talk)
+        stopwords_window = Toplevel(window)
+
+        stopwords_window.title("Stopwords found (TOP {}%)".format(preprocess.stop_word_ratio * 100))
+        stopwords_window.geometry("300x800")
+        add_table(stopwords_window, stop_words)
+        stopwords_window.mainloop()
+
+    btn_CSV = Button(window, text="Prepare CSV documents", command=prepare_csv_clicked)
     btn_CSV.grid(column=1, row=0, sticky=W + E + N + S, columnspan=2)
+
     btn_XML = Button(window, text="Prepare XML documents")
     btn_XML.grid(column=3, row=0, sticky=W + E + N + S, columnspan=1)
+
+
+def initial_window(window):
+    configure_size_window(window)
+
+    configure_prepare_section(window)
+
     entry_delete_doc = EntryWithPlaceholder(window, "Enter document text, Hello! etc.")
     entry_delete_doc.grid(column=1, row=1, sticky=W + E + N + S, columnspan=1)
     entry_delete_doc = EntryWithPlaceholder(window, "Enter document title, Intro etc.")

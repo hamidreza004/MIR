@@ -1,5 +1,4 @@
 import nltk
-import pandas as pd
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -12,7 +11,6 @@ from nltk import WordNetLemmatizer
 snowball = SnowballStemmer("english")
 lemma = WordNetLemmatizer()
 stop_word_ratio = 0.0026
-stop_words = []
 
 
 def clean_raw(raw):
@@ -24,26 +22,21 @@ def clean_raw(raw):
     return tokens
 
 
-def remove_stop_words(tokens):
-    return [word for word in tokens if not word in stop_words]
-
-
-def read_ted_file(path):
-    df = pd.read_csv(path)
-    ted_df = df[['description', 'title']]
-    return ted_df
+def remove_stop_words(tokens, stop_words):
+    return [word for word in tokens if not word in stop_words[0]]
 
 
 def find_stop_words(all_tokens_dic):
+    stop_words = [[], []]
     stop_point = len(all_tokens_dic.items()) * stop_word_ratio
     i = 0
-    print("Stopwords are ...:")
     for token, count in sorted(all_tokens_dic.items(), key=lambda item: item[1], reverse=True):
         i += 1
-        stop_words.append(token)
-        print(token, count)
+        stop_words[0].append(token)
+        stop_words[1].append(count)
         if i > stop_point:
             break
+    return stop_words
 
 
 def prepare_text(df):
@@ -58,14 +51,10 @@ def prepare_text(df):
                 else:
                     all_tokens_dic[token] += 1
 
-    find_stop_words(all_tokens_dic)
+    stop_words = find_stop_words(all_tokens_dic)
 
     for index, row in df.iterrows():
-        row['description'] = remove_stop_words(row['description'])
-        row['title'] = remove_stop_words(row['title'])
+        row['description'] = remove_stop_words(row['description'], stop_words)
+        row['title'] = remove_stop_words(row['title'], stop_words)
 
-    return df
-
-
-ted_talks = prepare_text(read_ted_file('data/ted_talks.csv'))
-print(ted_talks)
+    return df, stop_words
