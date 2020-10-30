@@ -1,31 +1,31 @@
-class GammaCodeCompressor:
+class VariableByteCompressor:
 
-    def get_compressed(self, posting_list, is_positional=True):
-        compressed = self.compress(posting_list, is_positional)
+    def get_compressed(self, positional_posting_list):
+        compressed = self.compress(positional_posting_list)
         padded_compressed = self.set_padding(compressed)
         return self.to_byte(padded_compressed)
 
-    def compress(self, posting_list, is_positional):
+    def compress(self, positional_posting_list):
         compressed = ""
-        last_document_number = -1
-        for i in range(0, len(posting_list)):
-            if i % 2 == 0 or not is_positional:
+        last_document_number = 0
+        for i in range(0, len(positional_posting_list)):
+            if i % 2 == 0:
                 # compress document number
-                document_number = posting_list[i]
+                document_number = positional_posting_list[i] + 1
                 compressed += self.get_gamma_code(document_number - last_document_number)
                 last_document_number = document_number
             else:
-                # compress position number
-                positions = posting_list[i]
+                # compress document number
+                positions = positional_posting_list[i] + 1
                 compressed += self.get_gamma_code(len(positions))
-                last_position = -1
+                last_position = 0
                 for position in positions:
                     compressed += self.get_gamma_code(position - last_position)
                     last_position = position
         return compressed
 
     def set_padding(self, compressed):
-        padding_amount = (8 - ((len(compressed) + 3) % 8)) % 8
+        padding_amount = (8 - ((len(compressed) + 3) % 8) % 8)
         for i in range(0, padding_amount):
             compressed += '1'
         return self.to_3bit_binary(padding_amount) + compressed
@@ -67,27 +67,23 @@ class GammaCodeCompressor:
             binary += i
         return binary
 
-
 class GammaCodeDecompressor:
 
     def __init__(self):
         self.bit_stream = ""
         self.iterator = 3
 
-    def get_decompressed(self, byte_stream, is_positional=True):
+    def get_decompressed(self, byte_stream):
         self.bit_stream = self.to_bit(byte_stream)
-        return self.get_posting_list(is_positional)
+        return self.get_positional_posting_list()
 
-    def get_posting_list(self, is_positional):
+    def get_positional_posting_list(self):
         posting_list = []
         document_number = -1
         document_diff = self.get_next_number()
         while document_diff is not None:
             document_number += document_diff
             posting_list.append(document_number)
-            if not is_positional:
-                document_diff = self.get_next_number()
-                continue
             positions_len = self.get_next_number()
             positions = []
             position = -1
@@ -100,8 +96,6 @@ class GammaCodeDecompressor:
 
     def get_next_number(self):
         length = 0
-        if self.iterator == len(self.bit_stream):
-            return None
         while self.bit_stream[self.iterator] == '1':
             length += 1
             self.iterator += 1
@@ -117,11 +111,3 @@ class GammaCodeDecompressor:
         for byte in byte_stream:
             bit_stream += format(ord(byte), '08b')
         return bit_stream
-
-
-posting = [0, 10, 15]
-zipper = GammaCodeCompressor()
-print(zipper.get_compressed(posting, False))
-
-unzipper = GammaCodeDecompressor()
-print(unzipper.get_decompressed(zipper.get_compressed(posting, False), False))
