@@ -1,6 +1,3 @@
-from bitstring import BitArray
-
-
 class GammaCodeCompressor:
 
     def __init__(self, path_to_file):
@@ -86,14 +83,6 @@ class GammaCodeDecompressor:
         self.iterator = 3
         self.bit_stream_len = len(self.bit_stream)
 
-    def read_file_in_binary(self):
-        file = open(self.path_to_file, "r")
-        byte = file.read(1)
-        while byte:
-            self.bit_stream += format(ord(byte), '08b')
-            byte = file.read(1)
-        file.close()
-
     def get_positional_posting_list(self):
         posting_list = []
         document_number = 0
@@ -110,6 +99,14 @@ class GammaCodeDecompressor:
             posting_list.append(positions)
             document_diff = self.get_next_number()
         return posting_list
+
+    def read_file_in_binary(self):
+        file = open(self.path_to_file, "r")
+        byte = file.read(1)
+        while byte:
+            self.bit_stream += format(ord(byte), '08b')
+            byte = file.read(1)
+        file.close()
 
     def get_next_number(self):
         length = 0
