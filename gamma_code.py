@@ -112,10 +112,3 @@ class GammaCodeDecompressor:
         for byte in byte_stream:
             bit_stream += format(ord(byte), '08b')
         return bit_stream
-
-# postings = [10, [1, 4, 5], 15, [2, 6, 8]]
-# zipper = GammaCodeCompressor()
-# print(zipper.get_compressed(postings))
-#
-# unzipper = GammaCodeDecompressor()
-# print(unzipper.get_decompressed("|ª³f'"))
