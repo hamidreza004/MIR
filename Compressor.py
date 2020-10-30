@@ -1,38 +1,99 @@
 class GammaCodeCompressor:
 
-    def __init__(self, path_to_file):
-        self.path_to_file = path_to_file
-        self.bit_stream = ""
-        self.padding = 0
-        self.last_document = 0
+    # def __init__(self):
+    #     self.bit_stream = ""
+    #     self.padding = 0
+    #     self.last_document = 0
 
-    def create_compressed_file(self, positional_posting_list):
-        self.compress(positional_posting_list)
-        self.set_padding()
-        self.write_to_file()
+    def get_compressed(self, positional_posting_list):
+        compressed = self.compress(positional_posting_list)
+        padded_compressed = self.set_padding(compressed)
+        return self.to_byte(padded_compressed)
+
+    # def create_compressed_file(self, positional_posting_list):
+    #     self.compress(positional_posting_list)
+    #     self.set_padding()
+    #     self.write_to_file()
+
+    # def add_to_compressed_file(self, positional_posting_list):
+    #     first_byte, last_byte = self.get_first_last_byte()
+    #     padding_number = int(first_byte[0:3], 2)
+    #     remaining_data = last_byte[0: 8 - padding_number]
+    #     self.compress(positional_posting_list)
+    #     self.bit_stream = remaining_data + self.bit_stream
+    #     self.update_padding()
+    #     new_fist_byte = self.to_3bit_binary(self.padding) + first_byte[3:8]
+    #     self.update_file(new_fist_byte)
 
     def compress(self, positional_posting_list):
-        self.bit_stream = ""
+        compressed = ""
+        last_document_number = 0
         for i in range(0, len(positional_posting_list)):
             if i % 2 == 0:
                 # compress document number
-                document = positional_posting_list[i]
-                self.bit_stream += self.get_gamma_code(document - self.last_document)
-                self.last_document = document
+                document_number = positional_posting_list[i]
+                compressed += self.get_gamma_code(document_number - last_document_number)
+                last_document_number = document_number
             else:
                 # compress document number
                 positions = positional_posting_list[i]
-                self.bit_stream += self.get_gamma_code(len(positions))
+                compressed += self.get_gamma_code(len(positions))
                 last_position = 0
                 for position in positions:
-                    self.bit_stream += self.get_gamma_code(position - last_position)
+                    compressed += self.get_gamma_code(position - last_position)
                     last_position = position
+        return compressed
 
-    def set_padding(self):
-        self.padding = (8 - ((len(self.bit_stream) + 3) % 8) % 8)
-        for i in range(0, self.padding):
-            self.bit_stream += '1'
-        self.bit_stream = self.to_3bit_binary(self.padding) + self.bit_stream
+    def set_padding(self, compressed):
+        padding_amount = (8 - ((len(compressed) + 3) % 8) % 8)
+        for i in range(0, padding_amount):
+            compressed += '1'
+        return self.to_3bit_binary(padding_amount) + compressed
+
+    # def update_padding(self):
+    #     self.padding = (8 - (len(self.bit_stream) % 8) % 8)
+    #     for i in range(0, self.padding):
+    #         self.bit_stream += '1'
+
+    def write_to_file(self):
+        byte_stream = ""
+        i = 0
+        bit_stream_len = len(self.bit_stream)
+        while i < bit_stream_len:
+            byte_stream += chr(int(self.bit_stream[i: i + 8], 2))
+            i += 8
+        file = open(self.path_to_file, "w")
+        file.write(byte_stream)
+        file.close()
+
+    def to_byte(self, bit_stream):
+        byte_stream = ""
+        i = 0
+        while i < len(bit_stream):
+            byte_stream += chr(int(bit_stream[i: i + 8], 2))
+            i += 8
+        return byte_stream
+
+    # def update_file(self, first_byte):
+    #     byte_stream = []
+    #     i = 0
+    #     bit_stream_len = len(self.bit_stream)
+    #     while i < bit_stream_len:
+    #         byte_stream.append(int(self.bit_stream[i: i + 8], 2))
+    #         i += 8
+    #     file = open(self.path_to_file, 'r+b')
+    #     file.write(bytearray([int(first_byte, 2)]))
+    #     file.seek(-1, 2)
+    #     file.write(bytearray(byte_stream))
+    #     file.close()
+
+    # def get_first_last_byte(self):
+    #     file = open(self.path_to_file, 'rb')
+    #     first_byte = format(ord(file.read(1)), '08b')
+    #     file.seek(-1, 2)
+    #     last_byte = format(ord(file.read(1)), '08b')
+    #     file.close()
+    #     return first_byte, last_byte
 
     def get_unary_code(self, decimal_number):
         unary_code = ""
@@ -63,16 +124,6 @@ class GammaCodeCompressor:
             binary += i
         return binary
 
-    def write_to_file(self):
-        byte_stream = ""
-        i = 0
-        while i < len(self.bit_stream):
-            byte_stream += chr(int(self.bit_stream[i: i + 8], 2))
-            i += 8
-        file = open(self.path_to_file, "w")
-        file.write(byte_stream)
-        file.close()
-
 
 class GammaCodeDecompressor:
 
@@ -81,7 +132,6 @@ class GammaCodeDecompressor:
         self.bit_stream = ''
         self.read_file_in_binary()
         self.iterator = 3
-        self.bit_stream_len = len(self.bit_stream)
 
     def get_positional_posting_list(self):
         posting_list = []
@@ -121,11 +171,10 @@ class GammaCodeDecompressor:
         return int('1' + offset, 2)
 
 
-gammaCodeCompressor = GammaCodeCompressor("./ted_postings_positional_gamma")
 postings = [10, [1, 4, 5], 15, [2, 6, 8]]
-gammaCodeCompressor.create_compressed_file(postings)
-print(gammaCodeCompressor.bit_stream)
+zipper = GammaCodeCompressor()
+print(zipper.get_compressed(postings))
 
-unzip = GammaCodeDecompressor("./ted_postings_positional_gamma")
-print(unzip.bit_stream)
-print(unzip.get_positional_posting_list())
+# unzip = GammaCodeDecompressor()
+# print(unzip.bit_stream)
+# print(unzip.get_positional_posting_list())
