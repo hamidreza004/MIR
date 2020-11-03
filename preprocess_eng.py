@@ -10,7 +10,7 @@ from nltk import WordNetLemmatizer
 
 snowball = SnowballStemmer("english")
 lemma = WordNetLemmatizer()
-stop_word_ratio = 0.0026
+stop_word_ratio = 0.003
 
 
 def clean_raw(raw):
