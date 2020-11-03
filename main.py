@@ -4,6 +4,7 @@ from tkinter import filedialog
 import preprocess
 import tkinter as tk
 import pandas as pd
+from helper import XML_to_dataframe
 
 
 class EntryWithPlaceholder(tk.Entry):
@@ -64,23 +65,34 @@ def configure_size_window(window):
 
 
 def configure_prepare_section(window):
-    def prepare_csv_clicked():
+    def prepare_CSV_clicked():
         filename = filedialog.askopenfilename()
         df = pd.read_csv(filename)
         csv_df = df[['description', 'title']]
         ted_talk, stop_words = preprocess.prepare_text(csv_df)
         print(ted_talk)
         stopwords_window = Toplevel(window)
-
         stopwords_window.title("Stopwords found (TOP {}%)".format(preprocess.stop_word_ratio * 100))
         stopwords_window.geometry("300x800")
         add_table(stopwords_window, stop_words)
         stopwords_window.mainloop()
 
-    btn_CSV = Button(window, text="Prepare CSV documents", command=prepare_csv_clicked)
+    btn_CSV = Button(window, text="Prepare CSV documents", command=prepare_CSV_clicked)
     btn_CSV.grid(column=1, row=0, sticky=W + E + N + S, columnspan=2)
 
-    btn_XML = Button(window, text="Prepare XML documents")
+    def prepare_XML_clicked():
+        filename = filedialog.askopenfilename()
+        df = XML_to_dataframe(filename)
+        csv_df = df[['description', 'title']]
+        ted_talk, stop_words = preprocess.prepare_text(csv_df)
+        print(ted_talk)
+        stopwords_window = Toplevel(window)
+        stopwords_window.title("Stopwords found (TOP {}%)".format(preprocess.stop_word_ratio * 100))
+        stopwords_window.geometry("300x800")
+        add_table(stopwords_window, stop_words)
+        stopwords_window.mainloop()
+
+    btn_XML = Button(window, text="Prepare XML documents", command=prepare_XML_clicked)
     btn_XML.grid(column=3, row=0, sticky=W + E + N + S, columnspan=1)
 
 
