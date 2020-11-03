@@ -9,7 +9,7 @@ normalizer = hazm.Normalizer()
 stemmer = hazm.Stemmer()
 lemmatizer = hazm.Lemmatizer()
 
-stop_word_ratio = 0.00026
+stop_word_ratio = 0.002
 
 
 def clean_raw(raw):

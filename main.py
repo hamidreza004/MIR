@@ -35,7 +35,20 @@ class EntryWithPlaceholder(tk.Entry):
             self.put_placeholder()
 
 
+def to_bigger_table(list, number_of_rows):
+    h = len(list) * number_of_rows
+    w = (len(list[0]) + number_of_rows - 1) // number_of_rows
+    print(h, w)
+    res = [["" for x in range(w)] for y in range(h)]
+    for i in range(len(list)):
+        for j in range(len(list[0])):
+            print(i, j, (j % number_of_rows) * len(list) + i, j // number_of_rows)
+            res[(j % number_of_rows) * len(list) + i][j // number_of_rows] = list[i][j]
+    return res
+
+
 def add_table(window, list):
+    list = to_bigger_table(list, 6)
     for i in range(len(list)):
         window.grid_columnconfigure(i, weight=1)
     for i in range(len(list[0])):
@@ -89,7 +102,7 @@ def configure_prepare_section(window):
         print(ted_talk)
         stopwords_window = Toplevel(window)
         stopwords_window.title("Stopwords found (TOP {}%)".format(preprocess_per.stop_word_ratio * 100))
-        stopwords_window.geometry("300x800")
+        stopwords_window.geometry("300x1200")
         add_table(stopwords_window, stop_words)
         stopwords_window.mainloop()
 

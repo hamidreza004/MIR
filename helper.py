@@ -20,5 +20,4 @@ def XML_to_dataframe(filename):
                             description = sub_sub_elem.text
             df.loc[i] = [description, title]
             i += 1
-    print(df)
     return df
