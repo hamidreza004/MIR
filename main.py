@@ -1,7 +1,8 @@
 import tkinter
 from tkinter import *
 from tkinter import filedialog
-import preprocess
+import preprocess_eng
+import preprocess_per
 import tkinter as tk
 import pandas as pd
 from helper import XML_to_dataframe
@@ -69,10 +70,10 @@ def configure_prepare_section(window):
         filename = filedialog.askopenfilename()
         df = pd.read_csv(filename)
         csv_df = df[['description', 'title']]
-        ted_talk, stop_words = preprocess.prepare_text(csv_df)
+        ted_talk, stop_words = preprocess_eng.prepare_text(csv_df)
         print(ted_talk)
         stopwords_window = Toplevel(window)
-        stopwords_window.title("Stopwords found (TOP {}%)".format(preprocess.stop_word_ratio * 100))
+        stopwords_window.title("Stopwords found (TOP {}%)".format(preprocess_eng.stop_word_ratio * 100))
         stopwords_window.geometry("300x800")
         add_table(stopwords_window, stop_words)
         stopwords_window.mainloop()
@@ -84,10 +85,10 @@ def configure_prepare_section(window):
         filename = filedialog.askopenfilename()
         df = XML_to_dataframe(filename)
         csv_df = df[['description', 'title']]
-        ted_talk, stop_words = preprocess.prepare_text(csv_df)
+        ted_talk, stop_words = preprocess_per.prepare_text(csv_df)
         print(ted_talk)
         stopwords_window = Toplevel(window)
-        stopwords_window.title("Stopwords found (TOP {}%)".format(preprocess.stop_word_ratio * 100))
+        stopwords_window.title("Stopwords found (TOP {}%)".format(preprocess_per.stop_word_ratio * 100))
         stopwords_window.geometry("300x800")
         add_table(stopwords_window, stop_words)
         stopwords_window.mainloop()
