@@ -1,8 +1,8 @@
 import tkinter
 from tkinter import *
 from tkinter import filedialog
-import preprocess_eng
-import preprocess_per
+import preprocess.preprocess_eng as eng
+import preprocess.preprocess_per as per
 import tkinter as tk
 import pandas as pd
 from helper import XML_to_dataframe
@@ -80,10 +80,10 @@ def configure_prepare_section(window):
         filename = filedialog.askopenfilename()
         df = pd.read_csv(filename)
         df = df[['description', 'title']]
-        result_df, stop_words = preprocess_eng.prepare_text(df)
+        result_df, stop_words = eng.prepare_text(df)
         print(result_df)
         stopwords_window = Toplevel(window)
-        stopwords_window.title("Stopwords found (TOP {}%)".format(preprocess_eng.stop_word_ratio * 100))
+        stopwords_window.title("Stopwords found (TOP {}%)".format(eng.stop_word_ratio * 100))
         stopwords_window.geometry("800x800")
         add_table(stopwords_window, wide_table(stop_words, 6))
         stopwords_window.mainloop()
@@ -95,10 +95,10 @@ def configure_prepare_section(window):
         filename = filedialog.askopenfilename()
         df = XML_to_dataframe(filename)
         df = df[['description', 'title']]
-        result_df, stop_words = preprocess_per.prepare_text(df)
+        result_df, stop_words = per.prepare_text(df)
         print(result_df)
         stopwords_window = Toplevel(window)
-        stopwords_window.title("Stopwords found (TOP {}%)".format(preprocess_per.stop_word_ratio * 100))
+        stopwords_window.title("Stopwords found (TOP {}%)".format(per.stop_word_ratio * 100))
         stopwords_window.geometry("800x1200")
         add_table(stopwords_window, wide_table(stop_words, 6))
         stopwords_window.mainloop()
@@ -109,9 +109,7 @@ def configure_prepare_section(window):
 
 def initial_window(window):
     configure_size_window(window)
-
     configure_prepare_section(window)
-
     entry_delete_doc = EntryWithPlaceholder(window, "Enter document text, Hello! etc.")
     entry_delete_doc.grid(column=1, row=1, sticky=W + E + N + S, columnspan=1)
     entry_delete_doc = EntryWithPlaceholder(window, "Enter document title, Intro etc.")

@@ -1,4 +1,5 @@
 import nltk
+from preprocess.stopwords import remove_stop_words, find_stop_words
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -22,23 +23,6 @@ def clean_raw(raw):
     return tokens
 
 
-def remove_stop_words(tokens, stop_words):
-    return [word for word in tokens if not word in stop_words[0]]
-
-
-def find_stop_words(all_tokens_dic):
-    stop_words = [[], []]
-    stop_point = len(all_tokens_dic.items()) * stop_word_ratio
-    i = 0
-    for token, count in sorted(all_tokens_dic.items(), key=lambda item: item[1], reverse=True):
-        i += 1
-        stop_words[0].append(token)
-        stop_words[1].append(count)
-        if i > stop_point:
-            break
-    return stop_words
-
-
 def prepare_text(df):
     all_tokens_dic = {}
     for index, row in df.iterrows():
@@ -51,7 +35,7 @@ def prepare_text(df):
                 else:
                     all_tokens_dic[token] += 1
 
-    stop_words = find_stop_words(all_tokens_dic)
+    stop_words = find_stop_words(all_tokens_dic, stop_word_ratio)
 
     for index, row in df.iterrows():
         row['description'] = remove_stop_words(row['description'], stop_words)
