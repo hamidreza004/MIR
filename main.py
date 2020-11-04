@@ -85,7 +85,6 @@ def configure_prepare_section(window):
         stopwords_window.title("Stopwords found (TOP {}%)".format(eng.stop_word_ratio * 100))
         stopwords_window.geometry("800x800")
         add_table(stopwords_window, wide_table(stop_words, 6))
-        prepare_documents(result_df, window)
         print(df)
         stopwords_window.mainloop()
 
@@ -101,7 +100,6 @@ def configure_prepare_section(window):
         stopwords_window.title("Stopwords found (TOP {}%)".format(per.stop_word_ratio * 100))
         stopwords_window.geometry("800x1200")
         add_table(stopwords_window, wide_table(stop_words, 6))
-        prepare_documents(result_df, window)
         print(df)
         stopwords_window.mainloop()
 
