@@ -75,18 +75,22 @@ def configure_size_window(window):
     window.grid_rowconfigure(8, weight=1)
 
 
+def prepare_documents(df, stopwords_window):
+    print(df)
+    stopwords_window.mainloop()
+
+
 def configure_prepare_section(window):
     def prepare_CSV_clicked():
         filename = filedialog.askopenfilename()
         df = pd.read_csv(filename)
         df = df[['description', 'title']]
         result_df, stop_words = eng.prepare_text(df)
-        print(result_df)
         stopwords_window = Toplevel(window)
         stopwords_window.title("Stopwords found (TOP {}%)".format(eng.stop_word_ratio * 100))
         stopwords_window.geometry("800x800")
         add_table(stopwords_window, wide_table(stop_words, 6))
-        stopwords_window.mainloop()
+        prepare_documents(result_df, window)
 
     btn_CSV = Button(window, text="Prepare CSV documents", command=prepare_CSV_clicked)
     btn_CSV.grid(column=1, row=0, sticky=W + E + N + S, columnspan=2)
@@ -96,12 +100,11 @@ def configure_prepare_section(window):
         df = XML_to_dataframe(filename)
         df = df[['description', 'title']]
         result_df, stop_words = per.prepare_text(df)
-        print(result_df)
         stopwords_window = Toplevel(window)
         stopwords_window.title("Stopwords found (TOP {}%)".format(per.stop_word_ratio * 100))
         stopwords_window.geometry("800x1200")
         add_table(stopwords_window, wide_table(stop_words, 6))
-        stopwords_window.mainloop()
+        prepare_documents(result_df, window)
 
     btn_XML = Button(window, text="Prepare XML documents", command=prepare_XML_clicked)
     btn_XML.grid(column=3, row=0, sticky=W + E + N + S, columnspan=1)
