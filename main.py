@@ -75,11 +75,6 @@ def configure_size_window(window):
     window.grid_rowconfigure(8, weight=1)
 
 
-def prepare_documents(df, stopwords_window):
-    print(df)
-    stopwords_window.mainloop()
-
-
 def configure_prepare_section(window):
     def prepare_CSV_clicked():
         filename = filedialog.askopenfilename()
@@ -91,6 +86,8 @@ def configure_prepare_section(window):
         stopwords_window.geometry("800x800")
         add_table(stopwords_window, wide_table(stop_words, 6))
         prepare_documents(result_df, window)
+        print(df)
+        stopwords_window.mainloop()
 
     btn_CSV = Button(window, text="Prepare CSV documents", command=prepare_CSV_clicked)
     btn_CSV.grid(column=1, row=0, sticky=W + E + N + S, columnspan=2)
@@ -105,6 +102,8 @@ def configure_prepare_section(window):
         stopwords_window.geometry("800x1200")
         add_table(stopwords_window, wide_table(stop_words, 6))
         prepare_documents(result_df, window)
+        print(df)
+        stopwords_window.mainloop()
 
     btn_XML = Button(window, text="Prepare XML documents", command=prepare_XML_clicked)
     btn_XML.grid(column=3, row=0, sticky=W + E + N + S, columnspan=1)
