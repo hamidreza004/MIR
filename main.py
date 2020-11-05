@@ -6,6 +6,7 @@ import preprocess.preprocess_per as per
 import tkinter as tk
 import pandas as pd
 from helper import XML_to_dataframe
+from index.core import add_single_document, add_multiple_documents
 
 
 class EntryWithPlaceholder(tk.Entry):
