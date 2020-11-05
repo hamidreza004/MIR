@@ -110,33 +110,78 @@ def configure_prepare_section(window):
     btn_XML.grid(column=3, row=0, sticky=W + E + N + S, columnspan=1)
 
 
-def initial_window(window):
-    configure_size_window(window)
-    configure_prepare_section(window)
-    entry_delete_doc = EntryWithPlaceholder(window, "Enter document text, Hello! etc.")
-    entry_delete_doc.grid(column=1, row=1, sticky=W + E + N + S, columnspan=1)
-    entry_delete_doc = EntryWithPlaceholder(window, "Enter document title, Intro etc.")
-    entry_delete_doc.grid(column=2, row=1, sticky=W + E + N + S, columnspan=1)
-    btn_delete_doc = Button(window, text="Add single document")
-    btn_delete_doc.grid(column=3, row=1, sticky=W + E + N + S, columnspan=1)
+def configure_change_index_section(window):
+    entry_add_doc_desc = EntryWithPlaceholder(window, "Enter document desc, Hello! etc.")
+    entry_add_doc_desc.grid(column=1, row=1, sticky=W + E + N + S, columnspan=1)
+    entry_add_doc_title = EntryWithPlaceholder(window, "Enter document title, Intro etc.")
+    entry_add_doc_title.grid(column=2, row=1, sticky=W + E + N + S, columnspan=1)
+    btn_add_doc = Button(window, text="Add single document")
+    btn_add_doc.grid(column=3, row=1, sticky=W + E + N + S, columnspan=1)
+
     entry_delete_doc = EntryWithPlaceholder(window, "Enter document ID, 32198 etc.")
     entry_delete_doc.grid(column=1, row=2, sticky=W + E + N + S, columnspan=2)
     btn_delete_doc = Button(window, text="Delete single document")
     btn_delete_doc.grid(column=3, row=2, sticky=W + E + N + S)
+
+
+def configure_index_section(window):
+    configure_change_index_section(window)
     entry_posting_list = EntryWithPlaceholder(window, "Enter term, Hello etc.")
     entry_posting_list.grid(column=1, row=3, sticky=W + E + N + S, columnspan=2)
-    btn_show_posting_list = Button(window, text="Show posting-list of a term")
+
+    def show_posting_list_clicked():
+        token = entry_posting_list.get()
+        posting_list = []
+        if index.token_exists(token):
+            posting_list = index.positional[index.get_token_id(token)]
+
+    btn_show_posting_list = Button(window, text="Show posting-list of a term", command=show_posting_list_clicked)
     btn_show_posting_list.grid(column=3, row=3, sticky=W + E + N + S)
+
     entry_term_pos = EntryWithPlaceholder(window, "Enter term, Hello etc.")
     entry_term_pos.grid(column=1, row=4, sticky=W + E + N + S, columnspan=1)
     entry_doc_pos = EntryWithPlaceholder(window, "Enter document ID, 32198 etc.")
     entry_doc_pos.grid(column=2, row=4, sticky=W + E + N + S, columnspan=1)
-    btn_show_pos_term_doc = Button(window, text="Show positions of term in document")
+
+    def show_pos_term_clicked():
+        token = entry_term_pos.get()
+        document = entry_doc_pos.get()
+        positions = []
+        if index.token_exists(token):
+            for doc_pos in index.positional[index.get_token_id(token)]:
+                if str(doc_pos[0]) == document:
+                    positions = doc_pos[1]
+                    break
+        posting_list_window = Toplevel(window)
+        posting_list_window.title("Positions {} appeared in document {}".format(token, document))
+        posting_list_window.geometry("450x400")
+        scrollbar = Scrollbar(posting_list_window)
+        scrollbar.pack(side=RIGHT, fill=Y)
+
+        list = Listbox(posting_list_window, yscrollcommand=scrollbar.set)
+        for position in positions:
+            if position % 2 == 0:
+                list.insert(END, "Position {} of title".format(position // 2))
+            else:
+                list.insert(END, "Position {} of description".format(position // 2))
+        list.pack(side=LEFT, fill=BOTH, expand=True)
+        scrollbar.config(command=list.yview)
+
+        posting_list_window.mainloop()
+
+    btn_show_pos_term_doc = Button(window, text="Show positions of term in document", command=show_pos_term_clicked)
     btn_show_pos_term_doc.grid(column=3, row=4, sticky=W + E + N + S)
+
     entry_bigram_terms = EntryWithPlaceholder(window, "Enter bigram terms, ba-ac-dv-ef etc.")
     entry_bigram_terms.grid(column=1, row=5, sticky=W + E + N + S, columnspan=2)
     btn_show_term_bigram = Button(window, text="Show terms fit in this bigram")
     btn_show_term_bigram.grid(column=3, row=5, sticky=W + E + N + S)
+
+
+def initial_window(window):
+    configure_size_window(window)
+    configure_prepare_section(window)
+    configure_index_section(window)
     btn_save = Button(window, text="Save index")
     btn_save.grid(column=1, row=6, sticky=W + E + N + S, columnspan=3)
     entry_query = EntryWithPlaceholder(window, "Enter your query, Shakespeare book etc.")

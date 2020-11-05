@@ -8,6 +8,10 @@ all_tokens = []
 doc_is_available = []
 
 
+def token_exists(token):
+    return token in token_map
+
+
 def get_token_id(token):
     if not token in token_map:
         token_map[token] = len(all_tokens)
