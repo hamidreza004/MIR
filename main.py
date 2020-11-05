@@ -6,7 +6,7 @@ import preprocess.preprocess_per as per
 import tkinter as tk
 import pandas as pd
 from helper import XML_to_dataframe
-from index.core import add_single_document, add_multiple_documents
+import index.core as index
 
 
 class EntryWithPlaceholder(tk.Entry):
@@ -87,6 +87,7 @@ def configure_prepare_section(window):
         stopwords_window.geometry("800x800")
         add_table(stopwords_window, wide_table(stop_words, 6))
         print(df)
+        index.add_multiple_documents(df)
         stopwords_window.mainloop()
 
     btn_CSV = Button(window, text="Prepare CSV documents", command=prepare_CSV_clicked)
@@ -102,6 +103,7 @@ def configure_prepare_section(window):
         stopwords_window.geometry("800x1200")
         add_table(stopwords_window, wide_table(stop_words, 6))
         print(df)
+        index.add_multiple_documents(df)
         stopwords_window.mainloop()
 
     btn_XML = Button(window, text="Prepare XML documents", command=prepare_XML_clicked)
