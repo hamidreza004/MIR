@@ -134,6 +134,24 @@ def configure_index_section(window):
         posting_list = []
         if index.token_exists(token):
             posting_list = index.positional[index.get_token_id(token)]
+        posting_list_window = Toplevel(window)
+        posting_list_window.title("Posting list of  '{}'".format(token))
+        posting_list_window.geometry("450x450")
+        scrollbar = Scrollbar(posting_list_window)
+        scrollbar.pack(side=RIGHT, fill=Y)
+
+        listbox = Listbox(posting_list_window, yscrollcommand=scrollbar.set)
+        for doc_pos in posting_list:
+            listbox.insert(END, "Document {}:".format(doc_pos[0]))
+            for position in doc_pos[1]:
+                if position % 2 == 0:
+                    listbox.insert(END, "Position {} of title".format(position // 2))
+                else:
+                    listbox.insert(END, "Position {} of description".format(position // 2))
+        listbox.pack(side=LEFT, fill=BOTH, expand=True)
+        scrollbar.config(command=listbox.yview)
+
+        posting_list_window.mainloop()
 
     btn_show_posting_list = Button(window, text="Show posting-list of a term", command=show_posting_list_clicked)
     btn_show_posting_list.grid(column=3, row=3, sticky=W + E + N + S)
@@ -152,29 +170,50 @@ def configure_index_section(window):
                 if str(doc_pos[0]) == document:
                     positions = doc_pos[1]
                     break
-        posting_list_window = Toplevel(window)
-        posting_list_window.title("Positions {} appeared in document {}".format(token, document))
-        posting_list_window.geometry("450x400")
-        scrollbar = Scrollbar(posting_list_window)
+        postition_list_window = Toplevel(window)
+        postition_list_window.title("Positions '{}' appeared in document '{}'".format(token, document))
+        postition_list_window.geometry("450x400")
+        scrollbar = Scrollbar(postition_list_window)
         scrollbar.pack(side=RIGHT, fill=Y)
 
-        list = Listbox(posting_list_window, yscrollcommand=scrollbar.set)
+        listbox = Listbox(postition_list_window, yscrollcommand=scrollbar.set)
         for position in positions:
             if position % 2 == 0:
-                list.insert(END, "Position {} of title".format(position // 2))
+                listbox.insert(END, "Position {} of title".format(position // 2))
             else:
-                list.insert(END, "Position {} of description".format(position // 2))
-        list.pack(side=LEFT, fill=BOTH, expand=True)
-        scrollbar.config(command=list.yview)
+                listbox.insert(END, "Position {} of description".format(position // 2))
+        listbox.pack(side=LEFT, fill=BOTH, expand=True)
+        scrollbar.config(command=listbox.yview)
 
-        posting_list_window.mainloop()
+        postition_list_window.mainloop()
 
     btn_show_pos_term_doc = Button(window, text="Show positions of term in document", command=show_pos_term_clicked)
     btn_show_pos_term_doc.grid(column=3, row=4, sticky=W + E + N + S)
 
-    entry_bigram_terms = EntryWithPlaceholder(window, "Enter bigram terms, ba-ac-dv-ef etc.")
+    entry_bigram_terms = EntryWithPlaceholder(window, "Enter bigram terms, ba etc.")
     entry_bigram_terms.grid(column=1, row=5, sticky=W + E + N + S, columnspan=2)
-    btn_show_term_bigram = Button(window, text="Show terms fit in this bigram")
+
+    def show_bigram_list_clicked():
+        biword = entry_bigram_terms.get()
+        tokens = []
+        if biword in index.bigram:
+            for token_id in index.bigram[biword]:
+                tokens.append(index.all_tokens[token_id])
+        token_list_window = Toplevel(window)
+        token_list_window.title("Terms contain '{}'".format(biword))
+        token_list_window.geometry("300x500")
+        scrollbar = Scrollbar(token_list_window)
+        scrollbar.pack(side=RIGHT, fill=Y)
+
+        listbox = Listbox(token_list_window, yscrollcommand=scrollbar.set)
+        for token in tokens:
+            listbox.insert(END, token)
+        listbox.pack(side=LEFT, fill=BOTH, expand=True)
+        scrollbar.config(command=listbox.yview)
+
+        token_list_window.mainloop()
+
+    btn_show_term_bigram = Button(window, text="Show terms fit in this bigram", command=show_bigram_list_clicked)
     btn_show_term_bigram.grid(column=3, row=5, sticky=W + E + N + S)
 
 
