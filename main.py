@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import filedialog
 import preprocess.preprocess_eng as eng
 import preprocess.preprocess_per as per
+import preprocess.stopwords as stopwords_core
 import tkinter as tk
 import pandas as pd
 from helper import XML_to_dataframe
@@ -34,6 +35,11 @@ class EntryWithPlaceholder(tk.Entry):
     def foc_out(self, *args):
         if not self.get():
             self.put_placeholder()
+
+
+def is_row_english(row):
+    import string
+    return row[0].lower() in string.ascii_lowercase
 
 
 def wide_table(list, number_of_rows):
@@ -115,7 +121,19 @@ def configure_change_index_section(window):
     entry_add_doc_desc.grid(column=1, row=1, sticky=W + E + N + S, columnspan=1)
     entry_add_doc_title = EntryWithPlaceholder(window, "Enter document title, Intro etc.")
     entry_add_doc_title.grid(column=2, row=1, sticky=W + E + N + S, columnspan=1)
-    btn_add_doc = Button(window, text="Add single document")
+
+    def add_document_clicked():
+        desc = entry_add_doc_desc.get()
+        title = entry_add_doc_title.get()
+        if is_row_english(desc):
+            lang = eng
+        else:
+            lang = per
+        id = index.add_single_document(stopwords_core.remove_stop_words(lang.clean_raw(desc), lang.stop_words),
+                                       stopwords_core.remove_stop_words(lang.clean_raw(title), lang.stop_words))
+        tk.messagebox.showinfo(title="Request Done", message="Your enter document added with id {}".format(id))
+
+    btn_add_doc = Button(window, text="Add single document", command=add_document_clicked)
     btn_add_doc.grid(column=3, row=1, sticky=W + E + N + S, columnspan=1)
 
     entry_delete_doc = EntryWithPlaceholder(window, "Enter document ID, 32198 etc.")

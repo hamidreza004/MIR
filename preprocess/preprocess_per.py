@@ -5,6 +5,7 @@ normalizer = hazm.Normalizer()
 stemmer = hazm.Stemmer()
 lemmatizer = hazm.Lemmatizer()
 stop_word_ratio = 0.002
+stop_words = []
 
 
 def clean_raw(raw):
@@ -17,6 +18,7 @@ def clean_raw(raw):
 
 
 def prepare_text(df):
+    global stop_words
     all_tokens_dic = {}
     for index, row in df.iterrows():
         row['description'] = clean_raw(row['description'])

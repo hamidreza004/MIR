@@ -65,6 +65,7 @@ def add_single_document(description, title):
     id = len(doc_is_available)
     add_to_indexes(id, description, is_title=False)
     add_to_indexes(id, title, is_title=True)
+    return id
 
 
 def add_multiple_documents(df):
