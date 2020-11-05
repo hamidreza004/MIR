@@ -39,6 +39,9 @@ def add_list_sorted(list, id, pos):
 
 def add_to_indexes(id, tokens, is_title):
     for ind, token in enumerate(tokens):
+        if not token in number_in_docs:
+            number_in_docs[token] = 0
+        number_in_docs[token] += 1
         token_id = get_token_id(token)
         if is_title:
             position = ind * 2
