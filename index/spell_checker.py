@@ -1,2 +1,2 @@
 def correct(query, index):
-    return query, 1.2, 3
+    return query + "salam", 1.2, 3

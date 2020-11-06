@@ -251,11 +251,19 @@ def configure_correct_query_section(win, entry_query):
     def correct_query_clicked():
         query = entry_query.get()
         corrected_query, jaccard_metric, edit_distance = spell_checker.correct(query, index)
-        listbox = Listbox(win)
-        listbox.insert(corrected_query)
-        listbox.insert("Jaccard similarity: {}".format(jaccard_metric))
-        listbox.insert("Edit distance: {}".format(edit_distance))
+
+        corrected_query_window = Toplevel(win)
+        corrected_query_window.title("Corrected query")
+        corrected_query_window.geometry("350x80")
+
+        listbox = Listbox(corrected_query_window)
+        listbox.insert(END, "Original query: {}".format(query))
+        listbox.insert(END, "Corrected query: {}".format(corrected_query))
+        listbox.insert(END, "Jaccard similarity: {}".format(jaccard_metric))
+        listbox.insert(END, "Edit distance: {}".format(edit_distance))
         listbox.pack(side=LEFT, fill=BOTH, expand=True)
+        entry_query.delete(0, "end")
+        entry_query.insert(0, corrected_query)
 
     btn_correct = Button(win, text="Correct my query", command=correct_query_clicked)
     btn_correct.grid(column=1, row=8, sticky=W + E + N + S, columnspan=1)
