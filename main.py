@@ -9,6 +9,7 @@ import pandas as pd
 from helper import XML_to_dataframe
 import index.core as index
 import index.spell_checker as spell_checker
+import search.LNC_LTC as LNC_LTC
 
 
 class EntryWithPlaceholder(tk.Entry):
@@ -137,7 +138,7 @@ def configure_change_index_section(win):
             lang = per
         id = index.add_single_document(stopwords_core.remove_stop_words(lang.clean_raw(desc), lang.stop_words),
                                        stopwords_core.remove_stop_words(lang.clean_raw(title), lang.stop_words))
-        tk.messagebox.showinfo(title="Info", message="Your enter document added with id {}".format(id))
+        tk.messagebox.showinfo(title="Info", message="Your enter document added with ID {}".format(id))
 
     btn_add_doc = Button(win, text="Add single document", command=add_document_clicked)
     btn_add_doc.grid(column=3, row=1, sticky=W + E + N + S, columnspan=1)
@@ -151,7 +152,7 @@ def configure_change_index_section(win):
             tk.messagebox.showerror(title="Error", message="Document you entered doesn't exists".format(document))
             return
         index.remove_document(document)
-        tk.messagebox.showinfo(title="Info", message="Document with id {} removed successfully".format(document))
+        tk.messagebox.showinfo(title="Info", message="Document with ID {} removed successfully".format(document))
 
     btn_delete_doc = Button(win, text="Delete single document", command=remove_document_clicked)
     btn_delete_doc.grid(column=3, row=2, sticky=W + E + N + S)
@@ -260,8 +261,8 @@ def configure_correct_query_section(win, entry_query):
         else:
             lang = per
         cleaned_query, corrected_query, jaccard_distance, edit_distance = spell_checker.correct(query, index,
-                                                                                              stop_words[0],
-                                                                                              lang)
+                                                                                                stop_words[0],
+                                                                                                lang)
 
         corrected_query_window = Toplevel(win)
         corrected_query_window.title("Corrected query")
@@ -281,11 +282,39 @@ def configure_correct_query_section(win, entry_query):
     btn_correct.grid(column=1, row=8, sticky=W + E + N + S, columnspan=1)
 
 
+def configure_search_section(win, entry_query):
+    def lncltc_search_clicked():
+        query = entry_query.get()
+        if is_row_english(query):
+            lang = eng
+        else:
+            lang = per
+        tokens = stopwords_core.remove_stop_words(lang.clean_raw(query), stop_words)
+        token_ids = [index.get_token_id(token) for token in tokens]
+        documents = LNC_LTC.search(token_ids, index)
+        documents = documents[:min(20, len(documents))]
+        search_results_window = Toplevel(win)
+        search_results_window.title("Search results")
+        search_results_window.geometry("250x500")
+
+        listbox = Listbox(search_results_window)
+        for document in documents:
+            listbox.insert(END, "Document ID: {}".format(document))
+        listbox.pack(side=LEFT, fill=BOTH, expand=True)
+
+    btn_search_lnc = Button(win, text="LNC-LTC search", command=lncltc_search_clicked)
+    btn_search_lnc.grid(column=2, row=8, sticky=W + E + N + S, columnspan=1)
+
+    btn_search_prox = Button(win, text="Proximity search")
+    btn_search_prox.grid(column=3, row=8, sticky=W + E + N + S, columnspan=1)
+
+
 def initial_window(win):
     configure_size_window(win)
     configure_prepare_section(win)
     configure_index_section(win)
 
+    # TODO: Connect to gamma_code and variable_byte section
     btn_save = Button(win, text="Save index")
     btn_save.grid(column=1, row=6, sticky=W + E + N + S, columnspan=2)
     btn_load = Button(win, text="Load index")
@@ -296,10 +325,7 @@ def initial_window(win):
 
     configure_correct_query_section(win, entry_query)
 
-    btn_search_lnc = Button(win, text="LNC-LTC search")
-    btn_search_lnc.grid(column=2, row=8, sticky=W + E + N + S, columnspan=1)
-    btn_search_prox = Button(win, text="Proximity search")
-    btn_search_prox.grid(column=3, row=8, sticky=W + E + N + S, columnspan=1)
+    configure_search_section(win, entry_query)
 
 
 window = tkinter.Tk()

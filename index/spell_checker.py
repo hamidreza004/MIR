@@ -29,14 +29,16 @@ def correct(query, index, stop_words, lang):
             bi_words = get_token_bi_words(token)
             jaccard_candidates = []
             for bi_word in bi_words:
-                for token_id in index.bigram[bi_word]:
-                    intersection = 0
-                    sum_of_subset_sizes = len(bi_words) + len(get_token_bi_words(index.all_tokens[token_id]))
-                    for bi_word_2 in bi_words:
-                        idx = bisect.bisect_left(index.bigram[bi_word_2], token_id)
-                        if idx < len(index.bigram[bi_word_2]) and index.bigram[bi_word_2][idx] == token_id:
-                            intersection += 1
-                    jaccard_candidates.append((1.0 - intersection / (sum_of_subset_sizes - intersection), token_id))
+                if bi_word in index.bigram:
+                    for token_id in index.bigram[bi_word]:
+                        intersection = 0
+                        sum_of_subset_sizes = len(bi_words) + len(get_token_bi_words(index.all_tokens[token_id]))
+                        for bi_word_2 in bi_words:
+                            if bi_word_2 in index.bigram:
+                                idx = bisect.bisect_left(index.bigram[bi_word_2], token_id)
+                                if idx < len(index.bigram[bi_word_2]) and index.bigram[bi_word_2][idx] == token_id:
+                                    intersection += 1
+                        jaccard_candidates.append((1.0 - intersection / (sum_of_subset_sizes - intersection), token_id))
             jaccard_candidates = sorted(jaccard_candidates)[:top_jaccard_items_candidate]
             edit_distance_candidates = []
             for candidate in jaccard_candidates:
