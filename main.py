@@ -291,15 +291,14 @@ def configure_search_section(win, entry_query):
             lang = per
         tokens = stopwords_core.remove_stop_words(lang.clean_raw(query), stop_words)
         token_ids = [index.get_token_id(token) for token in tokens]
-        documents = LNC_LTC.search(token_ids, index)
-        documents = documents[:min(20, len(documents))]
+        score_documents = LNC_LTC.search(token_ids, index)
         search_results_window = Toplevel(win)
         search_results_window.title("Search results")
         search_results_window.geometry("250x500")
 
         listbox = Listbox(search_results_window)
-        for document in documents:
-            listbox.insert(END, "Document ID: {}".format(document))
+        for document, score in score_documents:
+            listbox.insert(END, "Document ID: {} with similarity {}".format(document, score))
         listbox.pack(side=LEFT, fill=BOTH, expand=True)
 
     btn_search_lnc = Button(win, text="LNC-LTC search", command=lncltc_search_clicked)

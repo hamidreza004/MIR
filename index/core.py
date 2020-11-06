@@ -1,11 +1,15 @@
 import bisect
+from collections import Counter
 
+# Basic state:
 positional = {}
 bigram = {}
-number_in_docs = {}
-token_map = {}
 all_tokens = []
 doc_is_available = [True]
+# Can reproduce:
+number_in_docs = {}
+normalize_doc = {}
+token_map = {}
 
 
 def token_exists(token):
@@ -39,10 +43,10 @@ def add_list_sorted(my_list, id, pos):
 
 def add_to_indexes(id, tokens, is_title):
     for ind, token in enumerate(tokens):
-        if not token in number_in_docs:
-            number_in_docs[token] = 0
-        number_in_docs[token] += 1
         token_id = get_token_id(token)
+        if not token_id in number_in_docs:
+            number_in_docs[token_id] = 0
+        number_in_docs[token_id] += 1
         if is_title:
             position = ind * 2
         else:
@@ -63,8 +67,11 @@ def add_to_indexes(id, tokens, is_title):
 def add_single_document(description, title):
     id = len(doc_is_available)
     doc_is_available.append(True)
+    merged_tokens = description[:]
+    merged_tokens.extend(title)
     add_to_indexes(id, description, is_title=False)
     add_to_indexes(id, title, is_title=True)
+    normalize_doc[id] = sum([c * c for term, c in Counter(merged_tokens).items()])
     return id
 
 
