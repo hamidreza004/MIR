@@ -294,7 +294,7 @@ def configure_search_section(win, entry_query):
         score_documents = LNC_LTC.search(token_ids, index)
         search_results_window = Toplevel(win)
         search_results_window.title("Search results")
-        search_results_window.geometry("250x500")
+        search_results_window.geometry("400x500")
 
         listbox = Listbox(search_results_window)
         for document, score in score_documents:
