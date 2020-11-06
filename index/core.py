@@ -5,7 +5,7 @@ bigram = {}
 number_in_docs = {}
 token_map = {}
 all_tokens = []
-doc_is_available = []
+doc_is_available = [True]
 
 
 def token_exists(token):
@@ -19,22 +19,22 @@ def get_token_id(token):
     return token_map[token]
 
 
-def add_list_sorted(list, id, pos):
-    if len(list) == 0:
-        list.append([id, [pos]])
+def add_list_sorted(my_list, id, pos):
+    if len(my_list) == 0:
+        my_list.append([id, [pos]])
         return
     left = 0
-    right = len(list)
+    right = len(my_list)
     while left < right - 1:
         mid = (left + right) // 2
-        if list[mid][0] > id:
+        if my_list[mid][0] > id:
             right = mid
         else:
             left = mid
-    if list[left][0] == id:
-        bisect.insort(list[left][1], pos)
-    elif right == len(list):
-        list.insert(right, [id, [pos]])
+    if my_list[left][0] == id:
+        bisect.insort(my_list[left][1], pos)
+    elif right == len(my_list):
+        my_list.insert(right, [id, [pos]])
 
 
 def add_to_indexes(id, tokens, is_title):
@@ -61,11 +61,15 @@ def add_to_indexes(id, tokens, is_title):
 
 
 def add_single_document(description, title):
-    doc_is_available.append(True)
     id = len(doc_is_available)
+    doc_is_available.append(True)
     add_to_indexes(id, description, is_title=False)
     add_to_indexes(id, title, is_title=True)
     return id
+
+
+def remove_document(id):
+    doc_is_available[id] = False
 
 
 def add_multiple_documents(df):
