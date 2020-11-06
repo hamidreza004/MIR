@@ -1,27 +1,11 @@
-# MIR Project
+## MIR Project
 
-## Phase 1 (Preprocess)
+This project is written by Hamidreza Hedayati & Armin Saadat & Hamed Alimohammadzadeh
 
-### 1. Normalization:
-
-#TODO
+### Installation
 
 
-### 2. Tokenization:
-
-#TODO
+`pip install -r requirements.txt`
 
 
-### 3. Delete Punctuations:
-
-#TODO
-
-
-### 4. Delete Stopwords:
-
-#TODO
-
-
-### 5. Stemming:
-
-#TODO
+Then run `main.py` with `python>3.6`
