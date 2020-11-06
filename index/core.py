@@ -13,10 +13,12 @@ def token_exists(token):
 
 
 def get_token_id(token):
+    seen = True
     if not token in token_map:
         token_map[token] = len(all_tokens)
         all_tokens.append(token)
-    return token_map[token]
+        seen = False
+    return seen, token_map[token]
 
 
 def add_list_sorted(my_list, id, pos):
@@ -42,7 +44,7 @@ def add_to_indexes(id, tokens, is_title):
         if not token in number_in_docs:
             number_in_docs[token] = 0
         number_in_docs[token] += 1
-        token_id = get_token_id(token)
+        seen, token_id = get_token_id(token)
         if is_title:
             position = ind * 2
         else:
@@ -50,13 +52,12 @@ def add_to_indexes(id, tokens, is_title):
         if not token_id in positional:
             positional[token_id] = []
         add_list_sorted(positional[token_id], id, position)
-        i = 0
-        for i in range(len(token) - 1):
-            new_str = token[i] + token[i + 1]
-            if not new_str in bigram:
-                bigram[new_str] = []
-            loc = bisect.bisect_left(bigram[new_str], token_id, lo=0, hi=len(bigram[new_str]))
-            if loc >= len(bigram[new_str]) or bigram[new_str][loc] != token_id:
+        if not seen:
+            i = 0
+            for i in range(len(token) - 1):
+                new_str = token[i] + token[i + 1]
+                if not new_str in bigram:
+                    bigram[new_str] = []
                 bisect.insort(bigram[new_str], token_id)
 
 

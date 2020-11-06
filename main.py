@@ -8,6 +8,7 @@ import tkinter as tk
 import pandas as pd
 from helper import XML_to_dataframe
 import index.core as index
+import index.spell_checker as spell_checker
 
 
 class EntryWithPlaceholder(tk.Entry):
@@ -246,16 +247,35 @@ def configure_index_section(win):
     btn_show_term_bigram.grid(column=3, row=5, sticky=W + E + N + S)
 
 
+def configure_correct_query_section(win, entry_query):
+    def correct_query_clicked():
+        query = entry_query.get()
+        corrected_query, jaccard_metric, edit_distance = spell_checker.correct(query, index)
+        listbox = Listbox(win)
+        listbox.insert(corrected_query)
+        listbox.insert("Jaccard similarity: {}".format(jaccard_metric))
+        listbox.insert("Edit distance: {}".format(edit_distance))
+        listbox.pack(side=LEFT, fill=BOTH, expand=True)
+
+    btn_correct = Button(win, text="Correct my query", command=correct_query_clicked)
+    btn_correct.grid(column=1, row=8, sticky=W + E + N + S, columnspan=1)
+
+
 def initial_window(win):
     configure_size_window(win)
     configure_prepare_section(win)
     configure_index_section(win)
+
     btn_save = Button(win, text="Save index")
-    btn_save.grid(column=1, row=6, sticky=W + E + N + S, columnspan=3)
+    btn_save.grid(column=1, row=6, sticky=W + E + N + S, columnspan=2)
+    btn_load = Button(win, text="Load index")
+    btn_load.grid(column=3, row=6, sticky=W + E + N + S, columnspan=1)
+
     entry_query = EntryWithPlaceholder(win, "Enter your query, Shakespeare book etc.")
     entry_query.grid(column=1, row=7, sticky=W + E + N + S, columnspan=3)
-    btn_correct = Button(win, text="Correct my query")
-    btn_correct.grid(column=1, row=8, sticky=W + E + N + S, columnspan=1)
+
+    configure_correct_query_section(win, entry_query)
+
     btn_search_lnc = Button(win, text="LNC-LTC search")
     btn_search_lnc.grid(column=2, row=8, sticky=W + E + N + S, columnspan=1)
     btn_search_prox = Button(win, text="Proximity search")
