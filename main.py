@@ -83,8 +83,12 @@ def configure_size_window(win):
     win.grid_rowconfigure(8, weight=1)
 
 
+stop_words = []
+
+
 def configure_prepare_section(win):
     def prepare_CSV_clicked():
+        global stop_words
         filename = filedialog.askopenfilename()
         df = pd.read_csv(filename)
         df = df[['description', 'title']]
@@ -101,6 +105,7 @@ def configure_prepare_section(win):
     btn_CSV.grid(column=1, row=0, sticky=W + E + N + S, columnspan=2)
 
     def prepare_XML_clicked():
+        global stop_words
         filename = filedialog.askopenfilename()
         df = XML_to_dataframe(filename)
         df = df[['description', 'title']]
@@ -250,16 +255,23 @@ def configure_index_section(win):
 def configure_correct_query_section(win, entry_query):
     def correct_query_clicked():
         query = entry_query.get()
-        corrected_query, jaccard_metric, edit_distance = spell_checker.correct(query, index)
+        if is_row_english(query):
+            lang = eng
+        else:
+            lang = per
+        cleaned_query, corrected_query, jaccard_distance, edit_distance = spell_checker.correct(query, index,
+                                                                                              stop_words[0],
+                                                                                              lang)
 
         corrected_query_window = Toplevel(win)
         corrected_query_window.title("Corrected query")
-        corrected_query_window.geometry("350x80")
+        corrected_query_window.geometry("350x100")
 
         listbox = Listbox(corrected_query_window)
         listbox.insert(END, "Original query: {}".format(query))
+        listbox.insert(END, "Cleaned query: {}".format(cleaned_query))
         listbox.insert(END, "Corrected query: {}".format(corrected_query))
-        listbox.insert(END, "Jaccard similarity: {}".format(jaccard_metric))
+        listbox.insert(END, "Jaccard distance: {}".format(jaccard_distance))
         listbox.insert(END, "Edit distance: {}".format(edit_distance))
         listbox.pack(side=LEFT, fill=BOTH, expand=True)
         entry_query.delete(0, "end")
