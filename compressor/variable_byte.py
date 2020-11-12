@@ -106,7 +106,7 @@ class VariableByteDecompressor:
 # posting = [0, [3, 4, 6], 10, [3, 7, 24], 15, [23, 34523452345]]
 # # posting = [4, 6, 3534]
 # zipper = VariableByteCompressor()
-# # print(zipper.get_compressed(posting, True))
+# print(zipper.get_compressed(posting, is_positional=True))
 #
 # unzipper = VariableByteDecompressor()
-# print(unzipper.get_decompressed(zipper.get_compressed(posting, True), True))
+# print(unzipper.get_decompressed(zipper.get_compressed(posting, is_positional=True), is_positional=True))
