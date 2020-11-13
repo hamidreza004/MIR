@@ -8,20 +8,24 @@ class GammaCodeCompressor:
     def compress(self, posting_list, is_positional):
         compressed = ""
         last_document_number = -1
-        for i in range(0, len(posting_list)):
-            if i % 2 == 0 or not is_positional:
+        if is_positional:
+            for doc in posting_list:
                 # compress document number
-                document_number = posting_list[i]
+                document_number = doc[0]
                 compressed += self.get_gamma_code(document_number - last_document_number)
                 last_document_number = document_number
-            else:
                 # compress position number
-                positions = posting_list[i]
+                positions = doc[1]
                 compressed += self.get_gamma_code(len(positions))
                 last_position = -1
                 for position in positions:
                     compressed += self.get_gamma_code(position - last_position)
                     last_position = position
+        else:
+            for document_number in posting_list:
+                # compress document number
+                compressed += self.get_gamma_code(document_number - last_document_number)
+                last_document_number = document_number
         return compressed
 
     def set_padding(self, compressed):
@@ -82,20 +86,22 @@ class GammaCodeDecompressor:
         posting_list = []
         document_number = -1
         document_diff = self.get_next_number()
-        while document_diff is not None:
-            document_number += document_diff
-            posting_list.append(document_number)
-            if not is_positional:
+        if not is_positional:
+            while document_diff is not None:
+                document_number += document_diff
+                posting_list.append(document_number)
                 document_diff = self.get_next_number()
-                continue
-            positions_len = self.get_next_number()
-            positions = []
-            position = -1
-            for i in range(0, positions_len):
-                position += self.get_next_number()
-                positions.append(position)
-            posting_list.append(positions)
-            document_diff = self.get_next_number()
+        else:
+            while document_diff is not None:
+                document_number += document_diff
+                positions_len = self.get_next_number()
+                positions = []
+                position = -1
+                for i in range(0, positions_len):
+                    position += self.get_next_number()
+                    positions.append(position)
+                posting_list.append([document_number, positions])
+                document_diff = self.get_next_number()
         return posting_list
 
     def get_next_number(self):
@@ -118,9 +124,12 @@ class GammaCodeDecompressor:
             bit_stream += format(ord(byte), '08b')
         return bit_stream
 
-# posting = [0, 10, 15]
-# zipper = GammaCodeCompressor()
-# print(zipper.get_compressed(posting, False))
 
-# unzipper = GammaCodeDecompressor()
-# print(unzipper.get_decompressed(zipper.get_compressed(posting, False), False))
+posting = [[0, [0, 1, 2]], [10, [0, 4, 5, 6, 134]], [15, [0, 1]]]
+zipper = GammaCodeCompressor()
+
+a = dict()
+unzipper = GammaCodeDecompressor()
+a["kir"] = zipper.get_compressed(posting)
+print(a)
+print(a["kir"])

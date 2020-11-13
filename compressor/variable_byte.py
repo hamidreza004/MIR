@@ -6,21 +6,25 @@ class VariableByteCompressor:
 
     def compress(self, posting_list, is_positional):
         compressed = ""
-        last_document_number = 0
-        for i in range(0, len(posting_list)):
-            if i % 2 == 0 or not is_positional:
+        last_document_number = -1
+        if is_positional:
+            for doc in posting_list:
                 # compress document number
-                document_number = posting_list[i]
+                document_number = doc[0]
                 compressed += self.get_variable_byte(document_number - last_document_number)
                 last_document_number = document_number
-            else:
                 # compress position number
-                positions = posting_list[i]
+                positions = doc[1]
                 compressed += self.get_variable_byte(len(positions))
-                last_position = 0
+                last_position = -1
                 for position in positions:
                     compressed += self.get_variable_byte(position - last_position)
                     last_position = position
+        else:
+            for document_number in range(posting_list):
+                # compress document number
+                compressed += self.get_variable_byte(document_number - last_document_number)
+                last_document_number = document_number
         return compressed
 
     def get_variable_byte(self, decimal_number):
@@ -67,22 +71,25 @@ class VariableByteDecompressor:
 
     def get_posting_list(self, is_positional):
         posting_list = []
-        document_number = 0
+        document_number = -1
         document_diff = self.get_next_number()
-        while document_diff is not None:
-            document_number += document_diff
-            posting_list.append(document_number)
-            if not is_positional:
+
+        if not is_positional:
+            while document_diff is not None:
+                document_number += document_diff
+                posting_list.append(document_number)
                 document_diff = self.get_next_number()
-                continue
-            positions_len = self.get_next_number()
-            positions = []
-            position = 0
-            for i in range(0, positions_len):
-                position += self.get_next_number()
-                positions.append(position)
-            posting_list.append(positions)
-            document_diff = self.get_next_number()
+        else:
+            while document_diff is not None:
+                document_number += document_diff
+                positions_len = self.get_next_number()
+                positions = []
+                position = -1
+                for i in range(0, positions_len):
+                    position += self.get_next_number()
+                    positions.append(position)
+                posting_list.append([document_number, positions])
+                document_diff = self.get_next_number()
         return posting_list
 
     def get_next_number(self):
@@ -102,11 +109,8 @@ class VariableByteDecompressor:
             bit_stream += format(ord(byte), '08b')
         return bit_stream
 
-
-# posting = [0, [3, 4, 6], 10, [3, 7, 24], 15, [23, 34523452345]]
-# # posting = [4, 6, 3534]
+# posting = [[0, [0, 1, 2]], [10, [0, 4, 5, 6, 134]], [15, [0, 1]]]
 # zipper = VariableByteCompressor()
-# print(zipper.get_compressed(posting, is_positional=True))
 #
 # unzipper = VariableByteDecompressor()
-# print(unzipper.get_decompressed(zipper.get_compressed(posting, is_positional=True), is_positional=True))
+# print(unzipper.get_decompressed(zipper.get_compressed(posting)))
