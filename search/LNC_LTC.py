@@ -10,7 +10,7 @@ def search(token_ids, index):
     normalize_query = sum([c * c for _, c in query_terms])
     candidates = {}
     for token_id, count in query_terms:
-        weight_term_query = (1 + log(count)) * log(N / index.number_in_docs[token_id]) / sqrt(normalize_query)
+        weight_term_query = (1 + log(count)) * log(N / len(index.positional[token_id])) / sqrt(normalize_query)
         for doc_pos in index.positional[token_id]:
             tf_document = len(doc_pos) - 1
             document = doc_pos[0]
@@ -18,11 +18,11 @@ def search(token_ids, index):
             similarity = weight_term_query * weight_term_document
             if not document in candidates:
                 candidates[document] = 0
-            candidates[document] += -similarity
+            candidates[document] -= similarity
     results = []
     idx = 0
     for document, score in sorted(candidates.items(), key=lambda item: item[1]):
-        if idx >= 20:
+        if idx >= number_of_top_results:
             break
         results.append((document, -score))
         idx += 1

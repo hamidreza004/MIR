@@ -2,7 +2,6 @@ import nltk
 from preprocess.stopwords import remove_stop_words, find_stop_words
 
 nltk.download('punkt')
-nltk.download('stopwords')
 nltk.download('wordnet')
 
 from nltk.tokenize import word_tokenize

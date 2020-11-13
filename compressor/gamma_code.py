@@ -121,6 +121,6 @@ class GammaCodeDecompressor:
 # posting = [0, 10, 15]
 # zipper = GammaCodeCompressor()
 # print(zipper.get_compressed(posting, False))
-#
+
 # unzipper = GammaCodeDecompressor()
 # print(unzipper.get_decompressed(zipper.get_compressed(posting, False), False))

@@ -7,7 +7,6 @@ bigram = {}
 all_tokens = []
 doc_is_available = [True]
 # Can reproduce:
-number_in_docs = {}
 normalize_doc = {}
 token_map = {}
 
@@ -37,16 +36,13 @@ def add_list_sorted(my_list, id, pos):
             left = mid
     if my_list[left][0] == id:
         bisect.insort(my_list[left][1], pos)
-    elif right == len(my_list):
+    else:
         my_list.insert(right, [id, [pos]])
 
 
 def add_to_indexes(id, tokens, is_title):
     for ind, token in enumerate(tokens):
         token_id = get_token_id(token)
-        if not token_id in number_in_docs:
-            number_in_docs[token_id] = 0
-        number_in_docs[token_id] += 1
         if is_title:
             position = ind * 2
         else:
@@ -54,9 +50,9 @@ def add_to_indexes(id, tokens, is_title):
         if not token_id in positional:
             positional[token_id] = []
         add_list_sorted(positional[token_id], id, position)
-        i = 0
-        for i in range(len(token) - 1):
-            new_str = token[i] + token[i + 1]
+        new_token = "$" + token + "$"
+        for i in range(len(new_token) - 1):
+            new_str = new_token[i] + new_token[i + 1]
             if not new_str in bigram:
                 bigram[new_str] = []
             loc = bisect.bisect_left(bigram[new_str], token_id, lo=0, hi=len(bigram[new_str]))
@@ -67,10 +63,10 @@ def add_to_indexes(id, tokens, is_title):
 def add_single_document(description, title):
     id = len(doc_is_available)
     doc_is_available.append(True)
-    merged_tokens = description[:]
-    merged_tokens.extend(title)
     add_to_indexes(id, description, is_title=False)
     add_to_indexes(id, title, is_title=True)
+    merged_tokens = description[:]
+    merged_tokens.extend(title)
     normalize_doc[id] = sum([c * c for term, c in Counter(merged_tokens).items()])
     return id
 
