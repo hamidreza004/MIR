@@ -96,11 +96,11 @@ stop_words = []
 def configure_prepare_section(win):
     def prepare_CSV_clicked():
         global stop_words
+        print("Loading...")
         filename = filedialog.askopenfilename()
         df = pd.read_csv(filename)
         df = df[['description', 'title']]
         df, stop_words = eng.prepare_text(df)
-        index.add_multiple_documents(df)
 
         stopwords_window = Toplevel(win)
         stopwords_window.title("Stopwords found (TOP {}%)".format(eng.stop_word_ratio * 100))
@@ -140,6 +140,7 @@ def configure_prepare_section(win):
 
     def prepare_XML_clicked():
         global stop_words
+        print("Loading...")
         filename = filedialog.askopenfilename()
         df = XML_to_dataframe(filename)
         df = df[['description', 'title']]
