@@ -44,7 +44,8 @@ class FileWriter:
     def write_positional(self, compress_type):
         file = open(self.path + "positional.txt", "w", encoding="utf-8")
         compressed_positional = self.get_compressed_positional(compress_type)
-        file.write(json.dumps(compressed_positional))
+        json.dump(compressed_positional, file, ensure_ascii=False)
+        #file.write(json.dumps(compressed_positional))
         file.close()
 
     def get_compressed_positional(self, compress_type):
