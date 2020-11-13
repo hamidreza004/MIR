@@ -24,6 +24,8 @@ def search(token_ids, index):
     for document, score in sorted(candidates.items(), key=lambda item: item[1]):
         if idx >= number_of_top_results:
             break
+        if not index.doc_is_available[document]:
+            continue
         results.append((document, -score))
         idx += 1
     return results
