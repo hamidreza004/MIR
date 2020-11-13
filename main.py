@@ -115,7 +115,22 @@ def configure_prepare_section(win):
         stopwords_window.title("Stopwords found (TOP {}%)".format(per.stop_word_ratio * 100))
         stopwords_window.geometry("800x1200")
         add_table(stopwords_window, wide_table(stop_words, 6))
-        print(df)
+
+        parsed_document_window = Toplevel(win)
+        parsed_document_window.title("Parsed Document")
+        parsed_document_window.geometry("800x800")
+        scrollbar = Scrollbar(parsed_document_window)
+        scrollbar.pack(side=RIGHT, fill=Y)
+
+        listbox = Listbox(parsed_document_window, yscrollcommand=scrollbar.set)
+        for _, row in df.iterrows():
+            listbox.insert(END, str(row))
+
+        listbox.pack(side=LEFT, fill=BOTH, expand=True)
+        scrollbar.config(command=listbox.yview)
+
+        parsed_document_window.mainloop()
+
         index.add_multiple_documents(df)
         stopwords_window.mainloop()
 
