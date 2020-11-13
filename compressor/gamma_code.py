@@ -128,8 +128,8 @@ class GammaCodeDecompressor:
 posting = [[0, [0, 1, 2]], [10, [0, 4, 5, 6, 134]], [15, [0, 1]]]
 zipper = GammaCodeCompressor()
 
-a = dict()
-unzipper = GammaCodeDecompressor()
-a["kir"] = zipper.get_compressed(posting)
-print(a)
-print(a["kir"])
+# a = dict()
+# unzipper = GammaCodeDecompressor()
+# a["kir"] = zipper.get_compressed(posting)
+# print(a)
+# print(a["kir"])
