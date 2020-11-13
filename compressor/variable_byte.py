@@ -66,6 +66,8 @@ class VariableByteDecompressor:
         self.iterator = 0
 
     def get_decompressed(self, byte_stream, is_positional=True):
+        self.bit_stream = ""
+        self.iterator = 0
         self.bit_stream = self.to_bit(byte_stream)
         return self.get_posting_list(is_positional)
 

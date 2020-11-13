@@ -79,6 +79,8 @@ class GammaCodeDecompressor:
         self.iterator = 3
 
     def get_decompressed(self, byte_stream, is_positional=True):
+        self.bit_stream = ""
+        self.iterator = 3
         self.bit_stream = self.to_bit(byte_stream)
         return self.get_posting_list(is_positional)
 
@@ -125,11 +127,8 @@ class GammaCodeDecompressor:
         return bit_stream
 
 
-posting = [[0, [0, 1, 2]], [10, [0, 4, 5, 6, 134]], [15, [0, 1]]]
-zipper = GammaCodeCompressor()
-
-a = dict()
-unzipper = GammaCodeDecompressor()
-a["kir"] = "*9eøa"
-print(a)
-print(a["kir"])
+# p = [[0, [3, 4, 6]], [10, [3, 7, 24]], [15, [23, 34523452345]]]
+# zipper = GammaCodeCompressor()
+# unzipper = GammaCodeDecompressor()
+#
+# print(zipper.get_compressed(p))

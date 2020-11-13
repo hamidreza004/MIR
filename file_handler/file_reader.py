@@ -1,17 +1,73 @@
 import json
+from compressor.gamma_code import GammaCodeDecompressor
+from compressor.variable_byte import VariableByteDecompressor
 
 
 class FileReader:
-    def __init__(self, path_to_file):
-        self.path = path_to_file
-        self.inverted_index = ""
+    def __init__(self):
+        self.doc_is_available = []
+        self.normalized_docs = []
+        self.all_tokens = []
+        self.token_map = dict()
+        self.bigram = dict()
+        self.positional = dict()
+        self.path = "../IR_files/"
 
-    def read(self):
-        file = open(self.path, "r")
-        self.inverted_index = json.loads(file.read())
+    def read(self, compress_tyep):
+        self.read_doc_is_available()
+        self.read_normalized_docs()
+        self.read_all_tokens()
+        self.read_bigram(compress_tyep)
+        self.read_positional(compress_tyep)
+
+    def read_doc_is_available(self):
+        file = open(self.path + "doc_is_available.txt", "r")
+        self.doc_is_available = json.loads(file.read())
         file.close()
 
+    def read_normalized_docs(self):
+        file = open(self.path + "normalized_docs.txt", "r")
+        self.normalized_docs = json.loads(file.read())
+        file.close()
 
-# file_reader = FileReader("./test.txt")
-# file_reader.read()
-# print(file_reader.inverted_index)
+    def read_all_tokens(self):
+        file = open(self.path + "all_tokens.txt", "r")
+        self.all_tokens = json.loads(file.read())
+        for i, t in enumerate(self.all_tokens):
+            self.token_map["t"] = i
+        file.close()
+
+    def read_bigram(self, compress_type):
+        file = open(self.path + "bigram.txt", "r")
+        self.bigram = self.get_decompressed_bigram(json.loads(file.read()), compress_type)
+        file.close()
+
+    def read_positional(self, compress_type):
+        file = open(self.path + "positional.txt", "r")
+        self.positional = self.get_decompressed_positional(json.loads(file.read()), compress_type)
+        # self.positional = json.loads(file.read())
+        file.close()
+
+    def get_decompressed_bigram(self, compressed, compress_type):
+        if compress_type == "none":
+            return compressed
+        decompressed = dict()
+        if compress_type == "gamma_code":
+            decompressor = GammaCodeDecompressor()
+        elif compress_type == "variable_byte":
+            decompressor = VariableByteDecompressor()
+        for term, posting in compressed.items():
+            decompressed[term] = decompressor.get_decompressed(posting, is_positional=False)
+        return decompressed
+
+    def get_decompressed_positional(self, compressed, compress_type):
+        if compress_type == "none":
+            return compressed
+        decompressed = dict()
+        if compress_type == "gamma_code":
+            decompressor = GammaCodeDecompressor()
+        elif compress_type == "variable_byte":
+            decompressor = VariableByteDecompressor()
+        for term, posting in compressed.items():
+            decompressed[term] = decompressor.get_decompressed(posting)
+        return decompressed

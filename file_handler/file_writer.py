@@ -1,6 +1,5 @@
 import json
-import io
-import sys
+import os
 from compressor.gamma_code import GammaCodeCompressor
 from compressor.variable_byte import VariableByteCompressor
 
@@ -41,21 +40,28 @@ class FileWriter:
         file.write(json.dumps(self.get_compressed_bigram(compress_type)))
         file.close()
 
+    def get_bigram_size(self):
+        return os.stat(self.path + "bigram.txt").st_size
+
     def write_positional(self, compress_type):
         file = open(self.path + "positional.txt", "w", encoding="utf-8")
         compressed_positional = self.get_compressed_positional(compress_type)
-        json.dump(compressed_positional, file, ensure_ascii=False)
-        #file.write(json.dumps(compressed_positional))
+        json_string = json.dumps(compressed_positional, ensure_ascii=False).encode('utf8')
+        file.write(json_string.decode())
+        # file.write(json.dumps(compressed_positional))
         file.close()
+
+    def get_positional_size(self):
+        return os.stat(self.path + "positional.txt").st_size
 
     def get_compressed_positional(self, compress_type):
         if compress_type == "none":
             return self.positional
         compressed = dict()
         if compress_type == "gamma_code":
-            compressor = VariableByteCompressor()
-        elif compress_type == "variable_byte":
             compressor = GammaCodeCompressor()
+        elif compress_type == "variable_byte":
+            compressor = VariableByteCompressor()
         for term, posting in self.positional.items():
             compressed[term] = compressor.get_compressed(posting)
         return compressed
@@ -65,17 +71,17 @@ class FileWriter:
             return self.bigram
         compressed = dict()
         if compress_type == "gamma_code":
-            compressor = VariableByteCompressor()
-        elif compress_type == "variable_byte":
             compressor = GammaCodeCompressor()
+        elif compress_type == "variable_byte":
+            compressor = VariableByteCompressor()
         for term, posting in self.bigram.items():
             compressed[term] = compressor.get_compressed(posting, is_positional=False)
         return compressed
 
 
 inv_index = dict()
-inv_index["salam"] = [[0, [3, 4, 6]], [10, [3, 7, 24]], [15, [23, 34523452345]]]
-# inv_index["boos"] = [[7, [4, 6]], [10, [0, 24]], [11, [234, 345]]]
+inv_index["salam"] = [[0, [3, 4, 6]], [10, [3, 7, 24]], [15, [23, 35345]]]
+inv_index["boos"] = [[7, [4, 6]], [10, [0, 24]], [11, [234, 345]]]
 
 file_writer = FileWriter(None, None, None, None, inv_index)
-file_writer.write_positional("gamma_code")
+file_writer.write_positional("variable_byte")
