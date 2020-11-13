@@ -79,9 +79,9 @@ class FileWriter:
         return compressed
 
 
-inv_index = dict()
-inv_index["salam"] = [[0, [3, 4, 6]], [10, [3, 7, 24]], [15, [23, 35345]]]
-inv_index["boos"] = [[7, [4, 6]], [10, [0, 24]], [11, [234, 345]]]
-
-file_writer = FileWriter(None, None, None, None, inv_index)
-file_writer.write_positional("variable_byte")
+# inv_index = dict()
+# inv_index["salam"] = [[0, [3, 4, 6]], [10, [3, 7, 24]], [15, [23, 35345]]]
+# inv_index["boos"] = [[7, [4, 6]], [10, [0, 24]], [11, [234, 345]]]
+#
+# file_writer = FileWriter(None, None, None, None, inv_index)
+# file_writer.write_positional("variable_byte")
