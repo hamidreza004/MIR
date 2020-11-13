@@ -4,7 +4,7 @@ from math import log, sqrt
 number_of_top_results = 20
 
 
-def search(token_ids, index):
+def search(token_ids, index, documents=None):
     N = len(index.doc_is_available)
     query_terms = Counter(token_ids).items()
     normalize_query = sum([c * c for _, c in query_terms])
@@ -14,6 +14,8 @@ def search(token_ids, index):
         for doc_pos in index.positional[token_id]:
             tf_document = len(doc_pos) - 1
             document = doc_pos[0]
+            if documents is not None and document not in documents:
+                continue
             weight_term_document = (1 + log(tf_document)) * 1 / sqrt(index.normalize_doc[document])
             similarity = weight_term_query * weight_term_document
             if not document in candidates:

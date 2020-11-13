@@ -10,12 +10,14 @@ from helper import XML_to_dataframe
 import index.core as index
 import index.spell_checker as spell_checker
 import search.LNC_LTC as LNC_LTC
+import search.proximity as proximity
 
 
 def multiple(*func_list):
     '''run multiple functions as one'''
     # I can't decide if this is ugly or pretty
-    return lambda *args, **kw: [func(*args, **kw) for func in func_list]; None
+    return lambda *args, **kw: [func(*args, **kw) for func in func_list];
+    None
 
 
 class EntryWithPlaceholder(tk.Entry):
@@ -101,6 +103,7 @@ def configure_prepare_section(win):
         df = pd.read_csv(filename)
         df = df[['description', 'title']]
         df, stop_words = eng.prepare_text(df)
+        index.add_multiple_documents(df)
 
         stopwords_window = Toplevel(win)
         stopwords_window.title("Stopwords found (TOP {}%)".format(eng.stop_word_ratio * 100))
@@ -132,7 +135,6 @@ def configure_prepare_section(win):
         scrollbar.config(command=multiple(listbox1.yview, listbox2.yview, listbox3.yview))
 
         parsed_document_window.mainloop()
-
         stopwords_window.mainloop()
 
     btn_CSV = Button(win, text="Prepare CSV documents", command=prepare_CSV_clicked)
@@ -343,6 +345,16 @@ def configure_correct_query_section(win, entry_query):
 
 
 def configure_search_section(win, entry_query):
+    def show_score_table(score_documents, title_of_window):
+        search_results_window = Toplevel(win)
+        search_results_window.title(title_of_window)
+        search_results_window.geometry("400x500")
+
+        listbox = Listbox(search_results_window)
+        for document, score in score_documents:
+            listbox.insert(END, "Document ID: {} with similarity {}".format(document, score))
+        listbox.pack(side=LEFT, fill=BOTH, expand=True)
+
     def lncltc_search_clicked():
         query = entry_query.get()
         if is_row_english(query):
@@ -352,19 +364,28 @@ def configure_search_section(win, entry_query):
         tokens = stopwords_core.remove_stop_words(lang.clean_raw(query), stop_words)
         token_ids = [index.get_token_id(token) for token in tokens]
         score_documents = LNC_LTC.search(token_ids, index)
-        search_results_window = Toplevel(win)
-        search_results_window.title("Search results")
-        search_results_window.geometry("400x500")
-
-        listbox = Listbox(search_results_window)
-        for document, score in score_documents:
-            listbox.insert(END, "Document ID: {} with similarity {}".format(document, score))
-        listbox.pack(side=LEFT, fill=BOTH, expand=True)
+        show_score_table(score_documents, "Search results")
 
     btn_search_lnc = Button(win, text="LNC-LTC search", command=lncltc_search_clicked)
     btn_search_lnc.grid(column=2, row=8, sticky=W + E + N + S, columnspan=1)
 
-    btn_search_prox = Button(win, text="Proximity search")
+    entry_window_size = EntryWithPlaceholder(win, "Enter your window size, 5 etc.")
+    entry_window_size.grid(column=3, row=7, sticky=W + E + N + S, columnspan=1)
+
+    def proximity_search_clicked():
+        query = entry_query.get()
+        window_size = int(entry_window_size.get())
+        if is_row_english(query):
+            lang = eng
+        else:
+            lang = per
+        tokens = stopwords_core.remove_stop_words(lang.clean_raw(query), stop_words)
+        token_ids = [index.get_token_id(token) for token in tokens]
+        score_title_docs, score_desc_docs = proximity.search(token_ids, index, window_size)
+        show_score_table(score_title_docs, "Search results on titles")
+        show_score_table(score_desc_docs, "Search results on descriptions")
+
+    btn_search_prox = Button(win, text="Proximity search", command=proximity_search_clicked)
     btn_search_prox.grid(column=3, row=8, sticky=W + E + N + S, columnspan=1)
 
 
@@ -380,7 +401,7 @@ def initial_window(win):
     btn_load.grid(column=3, row=6, sticky=W + E + N + S, columnspan=1)
 
     entry_query = EntryWithPlaceholder(win, "Enter your query, Shakespeare book etc.")
-    entry_query.grid(column=1, row=7, sticky=W + E + N + S, columnspan=3)
+    entry_query.grid(column=1, row=7, sticky=W + E + N + S, columnspan=2)
 
     configure_correct_query_section(win, entry_query)
 
