@@ -125,7 +125,7 @@ def configure_prepare_section(win):
         listbox3.insert(END, 'Description')
 
         for i, row in df.iterrows():
-            listbox1.insert(END, i)
+            listbox1.insert(END, i + 1)
             listbox2.insert(END, ', '.join(row['title']))
             listbox3.insert(END, ', '.join(row['description']))
 
@@ -169,7 +169,7 @@ def configure_prepare_section(win):
         listbox3.insert(END, 'Description')
 
         for i, row in df.iterrows():
-            listbox1.insert(END, i)
+            listbox1.insert(END, i + 1)
             listbox2.insert(END, ', '.join(row['title']))
             listbox3.insert(END, ', '.join(row['description']))
 
