@@ -13,6 +13,7 @@ class FileWriter:
         self.bigram = bigram
         self.positional = positional
         self.path = "IR_files/"
+        os.mkdir(self.path)
 
     def write(self, compress_type):
         self.write_stop_words()
