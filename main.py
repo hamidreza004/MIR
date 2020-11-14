@@ -425,8 +425,12 @@ def configure_save_load_section(win):
             compress_type = "gamma_code"
         file_reader = FileReader()
         file_reader.read(compress_type)
-        index.doc_is_available, index.normalize_doc, index.all_tokens, index.bigram, index.positional, index.token_map = file_reader.doc_is_available, file_reader.normalized_docs, file_reader.all_tokens, file_reader.bigram, file_reader.positional, file_reader.token_map
-        print(index.positional)
+        index.doc_is_available = file_reader.doc_is_available
+        index.normalize_doc = file_reader.normalized_docs
+        index.all_tokens = file_reader.all_tokens
+        index.bigram = file_reader.bigram
+        index.positional = file_reader.positional
+        index.token_map = file_reader.token_map
         tk.messagebox.showinfo(title="Done", message="Load successfully")
 
     btn_save = Button(win, text="Save index", command=save)

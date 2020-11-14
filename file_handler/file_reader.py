@@ -45,7 +45,7 @@ class FileReader:
     def read_positional(self, compress_type):
         file = open(self.path + "positional.txt", "r")
         self.positional = self.get_decompressed_positional(json.loads(file.read()), compress_type)
-        # self.positional = json.loads(file.read())
+        self.positional = {int(k): v for k, v in self.positional.items()}
         file.close()
 
     def get_decompressed_bigram(self, compressed, compress_type):
