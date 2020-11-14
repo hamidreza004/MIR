@@ -13,17 +13,20 @@ class FileWriter:
         self.bigram = bigram
         self.positional = positional
         self.path = "IR_files/"
-        os.mkdir(self.path)
+        try:
+            os.mkdir(self.path)
+        except:
+            pass
 
     def write(self, compress_type):
         self.write_stop_words()
         self.write_doc_is_available()
         self.write_normailzed_docs()
         self.write_all_tokens()
-        self.write_bigram(compress_type)
-        self.write_positional(compress_type)
         self.write_positional_none()
         self.write_bigram_none()
+        self.write_bigram(compress_type)
+        self.write_positional(compress_type)
 
     def write_stop_words(self):
         file = open(self.path + "stop_words.txt", "w")
@@ -99,9 +102,12 @@ class FileWriter:
             compressed[term] = compressor.get_compressed(posting, is_positional=False)
         return compressed
 
+#
 # inv_index = dict()
 # inv_index["salam"] = [[0, [3, 4, 6]], [10, [3, 7, 24]], [15, [23, 35345]]]
 # inv_index["boos"] = [[7, [4, 6]], [10, [0, 24]], [11, [234, 345]]]
 #
-# file_writer = FileWriter(None, None, None, None, inv_index)
-# file_writer.write_positional("variable_byte")
+# file_writer = FileWriter(None, None, None, None, None, inv_index)
+# file_writer.write_positional("none")
+# file_writer.write_positional_none()
+# print(file_writer.get_positional_size())
