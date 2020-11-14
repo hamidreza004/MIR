@@ -4,7 +4,7 @@ from preprocess.stopwords import remove_stop_words, find_stop_words
 normalizer = hazm.Normalizer()
 stemmer = hazm.Stemmer()
 lemmatizer = hazm.Lemmatizer()
-stop_word_ratio = 0.002
+stop_word_ratio = 0.0006
 stop_words = []
 
 
