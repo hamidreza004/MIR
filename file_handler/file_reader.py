@@ -5,6 +5,7 @@ from compressor.variable_byte import VariableByteDecompressor
 
 class FileReader:
     def __init__(self):
+        self.stop_words = []
         self.doc_is_available = []
         self.normalized_docs = []
         self.all_tokens = []
@@ -14,11 +15,17 @@ class FileReader:
         self.path = "IR_files/"
 
     def read(self, compress_tyep):
+        self.read_stop_words()
         self.read_doc_is_available()
         self.read_normalized_docs()
         self.read_all_tokens()
         self.read_bigram(compress_tyep)
         self.read_positional(compress_tyep)
+
+    def read_stop_words(self):
+        file = open(self.path + "stop_words.txt", "r")
+        self.stop_words = json.loads(file.read())
+        file.close()
 
     def read_doc_is_available(self):
         file = open(self.path + "doc_is_available.txt", "r")

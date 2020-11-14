@@ -5,7 +5,8 @@ from compressor.variable_byte import VariableByteCompressor
 
 
 class FileWriter:
-    def __init__(self, doc_is_available, normalized_docs, all_tokens, bigram, positional):
+    def __init__(self, stop_words, doc_is_available, normalized_docs, all_tokens, bigram, positional):
+        self.stop_words = stop_words
         self.doc_is_available = doc_is_available
         self.normalized_docs = normalized_docs
         self.all_tokens = all_tokens
@@ -14,11 +15,17 @@ class FileWriter:
         self.path = "IR_files/"
 
     def write(self, compress_type):
+        self.write_stop_words()
         self.write_doc_is_available()
         self.write_normailzed_docs()
         self.write_all_tokens()
         self.write_bigram(compress_type)
         self.write_positional(compress_type)
+
+    def write_stop_words(self):
+        file = open(self.path + "stop_words.txt", "w")
+        file.write(json.dumps(self.stop_words))
+        file.close()
 
     def write_doc_is_available(self):
         file = open(self.path + "doc_is_available.txt", "w")
