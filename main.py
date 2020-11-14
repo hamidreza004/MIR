@@ -408,7 +408,7 @@ def configure_save_load_section(win):
             compress_type = "none"
         if variable.get() == OPTIONS[1]:
             compress_type = "variable_byte"
-        if variable.get() == OPTIONS[0]:
+        if variable.get() == OPTIONS[2]:
             compress_type = "gamma_code"
         file_writer = FileWriter(stop_words, index.doc_is_available, index.normalize_doc, index.all_tokens,
                                  index.bigram,
