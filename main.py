@@ -410,12 +410,13 @@ def configure_save_load_section(win):
             compress_type = "variable_byte"
         if variable.get() == OPTIONS[0]:
             compress_type = "gamma_code"
-        file_writer = FileWriter(index.doc_is_available, index.normalize_doc, index.all_tokens, index.bigram,
+        file_writer = FileWriter(stop_words, index.doc_is_available, index.normalize_doc, index.all_tokens, index.bigram,
                                  index.positional)
         file_writer.write(compress_type)
         tk.messagebox.showinfo(title="Done", message="Save successfully")
 
     def load():
+        global stop_words
         compress_type = ""
         if variable.get() == OPTIONS[0]:
             compress_type = "none"
@@ -431,6 +432,7 @@ def configure_save_load_section(win):
         index.bigram = file_reader.bigram
         index.positional = file_reader.positional
         index.token_map = file_reader.token_map
+        stop_words = file_reader.stop_words
         tk.messagebox.showinfo(title="Done", message="Load successfully")
 
     btn_save = Button(win, text="Save index", command=save)

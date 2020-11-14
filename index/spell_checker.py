@@ -16,6 +16,7 @@ def edit_distance(str1, str2):
 
 
 def get_token_bi_words(token):
+    token = "$" + token + "$"
     return sorted(set([token[i] + token[i + 1] for i in range(len(token) - 1)]))
 
 

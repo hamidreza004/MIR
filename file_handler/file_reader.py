@@ -7,7 +7,7 @@ class FileReader:
     def __init__(self):
         self.stop_words = []
         self.doc_is_available = []
-        self.normalized_docs = []
+        self.normalized_docs = {}
         self.all_tokens = []
         self.token_map = dict()
         self.bigram = dict()
@@ -35,6 +35,7 @@ class FileReader:
     def read_normalized_docs(self):
         file = open(self.path + "normalized_docs.txt", "r")
         self.normalized_docs = json.loads(file.read())
+        self.normalized_docs = {int(k): v for k, v in self.normalized_docs.items()}
         file.close()
 
     def read_all_tokens(self):
