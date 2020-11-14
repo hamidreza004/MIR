@@ -200,8 +200,8 @@ def configure_change_index_section(win):
             lang = eng
         else:
             lang = per
-        id = index.add_single_document(stopwords_core.remove_stop_words(lang.clean_raw(desc), lang.stop_words),
-                                       stopwords_core.remove_stop_words(lang.clean_raw(title), lang.stop_words))
+        id = index.add_single_document(stopwords_core.remove_stop_words(lang.clean_raw(desc), stop_words),
+                                       stopwords_core.remove_stop_words(lang.clean_raw(title), stop_words))
         tk.messagebox.showinfo(title="Info", message="Your enter document added with ID {}".format(id))
 
     btn_add_doc = Button(win, text="Add single document", command=add_document_clicked)
@@ -415,7 +415,7 @@ def configure_save_load_section(win):
                                  index.positional)
         file_writer.write(compress_type)
         size_window = Toplevel(win)
-        size_window.title("Size window")
+        size_window.title("{}".format(variable.get()))
         size_window.geometry("400x100")
         size_label_1 = Label(size_window, text="Bigram:\nbefore = {}B, after = {}B".format(
                                 *file_writer.get_bigram_size()))
@@ -432,7 +432,7 @@ def configure_save_load_section(win):
             compress_type = "none"
         if variable.get() == OPTIONS[1]:
             compress_type = "variable_byte"
-        if variable.get() == OPTIONS[0]:
+        if variable.get() == OPTIONS[2]:
             compress_type = "gamma_code"
         file_reader = FileReader()
         file_reader.read(compress_type)

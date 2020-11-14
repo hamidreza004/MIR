@@ -17,6 +17,7 @@ def search(token_ids, index, documents=None):
             if documents is not None and document not in documents:
                 continue
             weight_term_document = (1 + log(tf_document)) * 1 / sqrt(index.normalize_doc[document])
+            print(index.normalize_doc[document])
             similarity = weight_term_query * weight_term_document
             if not document in candidates:
                 candidates[document] = 0
