@@ -410,7 +410,8 @@ def configure_save_load_section(win):
             compress_type = "variable_byte"
         if variable.get() == OPTIONS[0]:
             compress_type = "gamma_code"
-        file_writer = FileWriter(stop_words, index.doc_is_available, index.normalize_doc, index.all_tokens, index.bigram,
+        file_writer = FileWriter(stop_words, index.doc_is_available, index.normalize_doc, index.all_tokens,
+                                 index.bigram,
                                  index.positional)
         file_writer.write(compress_type)
         tk.messagebox.showinfo(title="Done", message="Save successfully")

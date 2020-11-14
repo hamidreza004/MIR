@@ -17,8 +17,6 @@ def is_document_with_window_terms(doc, max_pos, token_ids, index, window_size, t
                 find_pos = False
                 for pos in index.positional[token_id][left][1]:
                     if (1 - pos % 2) == title and pos // 2 - i + 1 <= window_size and pos // 2 >= i:
-                        if doc == 42:
-                            print(pos, i, window_size)
                         find_pos = True
                         break
                 if not find_pos:
