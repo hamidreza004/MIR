@@ -417,9 +417,9 @@ def configure_save_load_section(win):
         size_window = Toplevel(win)
         size_window.title("Size window")
         size_window.geometry("400x50")
-        size_label_1 = Label(size_window, text="Bigram before compress = {} after = {}".format(
+        size_label_1 = Label(size_window, text="Bigram:\nbefore = {}B, after = {}B".format(
                                 *file_writer.get_bigram_size()))
-        size_label_2 = Label(size_window, text="Positional before compress = {} after = {}".format(
+        size_label_2 = Label(size_window, text="Positional:\nbefore = {}B, after = {}B".format(
                                 *file_writer.get_positional_size()))
         size_label_1.pack()
         size_label_2.pack()

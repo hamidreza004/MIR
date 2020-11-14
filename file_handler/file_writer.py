@@ -59,7 +59,7 @@ class FileWriter:
         file.close()
 
     def get_bigram_size(self):
-        return os.stat(self.path + "bigram.txt").st_size, os.stat(self.path + "bigram_none.txt").st_size
+        return os.stat(self.path + "bigram_none.txt").st_size, os.stat(self.path + "bigram.txt").st_size
 
     def write_positional(self, compress_type):
         file = open(self.path + "positional.txt", "w", encoding="utf-8")
@@ -76,7 +76,7 @@ class FileWriter:
         file.close()
 
     def get_positional_size(self):
-        return os.stat(self.path + "positional.txt").st_size, os.stat(self.path + "positional_none.txt").st_size
+        return os.stat(self.path + "positional_none.txt").st_size, os.stat(self.path + "positional.txt").st_size
 
     def get_compressed_positional(self, compress_type):
         if compress_type == "none":
