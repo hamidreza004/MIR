@@ -21,6 +21,8 @@ class FileWriter:
         self.write_all_tokens()
         self.write_bigram(compress_type)
         self.write_positional(compress_type)
+        self.write_positional_none()
+        self.write_bigram_none()
 
     def write_stop_words(self):
         file = open(self.path + "stop_words.txt", "w")
@@ -47,19 +49,30 @@ class FileWriter:
         file.write(json.dumps(self.get_compressed_bigram(compress_type)))
         file.close()
 
+    def write_bigram_none(self):
+        file = open(self.path + "bigram_none.txt", "w")
+        file.write(json.dumps(self.get_compressed_bigram("none")))
+        file.close()
+
     def get_bigram_size(self):
-        return os.stat(self.path + "bigram.txt").st_size
+        return os.stat(self.path + "bigram.txt").st_size, os.stat(self.path + "bigram_none.txt").st_size
 
     def write_positional(self, compress_type):
         file = open(self.path + "positional.txt", "w", encoding="utf-8")
         compressed_positional = self.get_compressed_positional(compress_type)
         json_string = json.dumps(compressed_positional, ensure_ascii=False).encode('utf8')
         file.write(json_string.decode())
-        # file.write(json.dumps(compressed_positional))
+        file.close()
+
+    def write_positional_none(self):
+        file = open(self.path + "positional_none.txt", "w", encoding="utf-8")
+        compressed_positional = self.get_compressed_positional("none")
+        json_string = json.dumps(compressed_positional, ensure_ascii=False).encode('utf8')
+        file.write(json_string.decode())
         file.close()
 
     def get_positional_size(self):
-        return os.stat(self.path + "positional.txt").st_size
+        return os.stat(self.path + "positional.txt").st_size, os.stat(self.path + "positional_none.txt").st_size
 
     def get_compressed_positional(self, compress_type):
         if compress_type == "none":
