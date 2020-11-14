@@ -8,9 +8,13 @@ stop_word_ratio = 0.002
 stop_words = []
 
 
+def tokenize_raw(raw):
+    return hazm.word_tokenize(raw)
+
+
 def clean_raw(raw):
     raw = normalizer.normalize(raw)
-    tokens = hazm.word_tokenize(raw)
+    tokens = tokenize_raw(raw)
     tokens = [word for word in tokens if word.isalpha()]
     tokens = [stemmer.stem(word) for word in tokens]
     tokens = [lemmatizer.lemmatize(word) for word in tokens]

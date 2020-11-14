@@ -363,7 +363,7 @@ def configure_search_section(win, entry_query):
             lang = eng
         else:
             lang = per
-        tokens = stopwords_core.remove_stop_words(lang.clean_raw(query), stop_words)
+        tokens = stopwords_core.remove_stop_words(lang.tokenize_raw(query), stop_words)
         token_ids = [index.get_token_id(token) for token in tokens]
         score_documents = LNC_LTC.search(token_ids, index)
         show_score_table(score_documents, "Search results")
@@ -381,7 +381,7 @@ def configure_search_section(win, entry_query):
             lang = eng
         else:
             lang = per
-        tokens = stopwords_core.remove_stop_words(lang.clean_raw(query), stop_words)
+        tokens = stopwords_core.remove_stop_words(lang.tokenize_raw(query), stop_words)
         token_ids = [index.get_token_id(token) for token in tokens]
         score_title_docs, score_desc_docs = proximity.search(token_ids, index, window_size)
         show_score_table(score_title_docs, "Search results on titles")
@@ -414,7 +414,9 @@ def configure_save_load_section(win):
                                  index.bigram,
                                  index.positional)
         file_writer.write(compress_type)
-        tk.messagebox.showinfo(title="Done", message="Save successfully")
+        size_window = Toplevel(win)
+        size_window.title("Size window")
+        size_window.geometry("400x500")
 
     def load():
         global stop_words

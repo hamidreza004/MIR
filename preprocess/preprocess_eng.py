@@ -14,8 +14,12 @@ stop_word_ratio = 0.003
 stop_words = []
 
 
+def tokenize_raw(raw):
+    return word_tokenize(raw.lower())
+
+
 def clean_raw(raw):
-    tokens = word_tokenize(raw.lower())
+    tokens = tokenize_raw(raw)
     tokens = [word for word in tokens if word.isalpha()]
     tokens = [snowball.stem(word) for word in tokens]
     tokens = [lemma.lemmatize(word, pos="v") for word in tokens]
