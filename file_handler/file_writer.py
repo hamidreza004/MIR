@@ -11,7 +11,7 @@ class FileWriter:
         self.all_tokens = all_tokens
         self.bigram = bigram
         self.positional = positional
-        self.path = "../IR_files/"
+        self.path = "IR_files/"
 
     def write(self, compress_type):
         self.write_doc_is_available()
@@ -77,7 +77,6 @@ class FileWriter:
         for term, posting in self.bigram.items():
             compressed[term] = compressor.get_compressed(posting, is_positional=False)
         return compressed
-
 
 # inv_index = dict()
 # inv_index["salam"] = [[0, [3, 4, 6]], [10, [3, 7, 24]], [15, [23, 35345]]]

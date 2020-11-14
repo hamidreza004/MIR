@@ -11,7 +11,7 @@ class FileReader:
         self.token_map = dict()
         self.bigram = dict()
         self.positional = dict()
-        self.path = "../IR_files/"
+        self.path = "IR_files/"
 
     def read(self, compress_tyep):
         self.read_doc_is_available()
@@ -34,7 +34,7 @@ class FileReader:
         file = open(self.path + "all_tokens.txt", "r")
         self.all_tokens = json.loads(file.read())
         for i, t in enumerate(self.all_tokens):
-            self.token_map["t"] = i
+            self.token_map[t] = i
         file.close()
 
     def read_bigram(self, compress_type):

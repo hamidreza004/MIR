@@ -11,7 +11,8 @@ import index.core as index
 import index.spell_checker as spell_checker
 import search.LNC_LTC as LNC_LTC
 import search.proximity as proximity
-from file_handler.file_writer import *
+from file_handler.file_writer import FileWriter
+from file_handler.file_reader import FileReader
 
 
 def multiple(*func_list):
@@ -412,10 +413,25 @@ def configure_save_load_section(win):
         file_writer = FileWriter(index.doc_is_available, index.normalize_doc, index.all_tokens, index.bigram,
                                  index.positional)
         file_writer.write(compress_type)
+        tk.messagebox.showinfo(title="Done", message="Save successfully")
+
+    def load():
+        compress_type = ""
+        if variable.get() == OPTIONS[0]:
+            compress_type = "none"
+        if variable.get() == OPTIONS[1]:
+            compress_type = "variable_byte"
+        if variable.get() == OPTIONS[0]:
+            compress_type = "gamma_code"
+        file_reader = FileReader()
+        file_reader.read(compress_type)
+        index.doc_is_available, index.normalize_doc, index.all_tokens, index.bigram, index.positional, index.token_map = file_reader.doc_is_available, file_reader.normalized_docs, file_reader.all_tokens, file_reader.bigram, file_reader.positional, file_reader.token_map
+        print(index.positional)
+        tk.messagebox.showinfo(title="Done", message="Load successfully")
 
     btn_save = Button(win, text="Save index", command=save)
     btn_save.grid(column=2, row=6, sticky=W + E + N + S, columnspan=1)
-    btn_load = Button(win, text="Load index")
+    btn_load = Button(win, text="Load index", command=load)
     btn_load.grid(column=3, row=6, sticky=W + E + N + S, columnspan=1)
 
 
