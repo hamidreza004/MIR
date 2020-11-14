@@ -21,7 +21,7 @@ class VariableByteCompressor:
                     compressed += self.get_variable_byte(position - last_position)
                     last_position = position
         else:
-            for document_number in range(posting_list):
+            for document_number in posting_list:
                 # compress document number
                 compressed += self.get_variable_byte(document_number - last_document_number)
                 last_document_number = document_number
