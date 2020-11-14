@@ -11,6 +11,7 @@ import index.core as index
 import index.spell_checker as spell_checker
 import search.LNC_LTC as LNC_LTC
 import search.proximity as proximity
+from file_handler.file_writer import *
 
 
 def multiple(*func_list):
@@ -389,22 +390,45 @@ def configure_search_section(win, entry_query):
     btn_search_prox.grid(column=3, row=8, sticky=W + E + N + S, columnspan=1)
 
 
+def configure_save_load_section(win):
+    OPTIONS = [
+        "Without Compression",
+        "Variable-byte",
+        "Gamma-code"
+    ]
+    variable = StringVar(win)
+    variable.set(OPTIONS[0])  # default value
+    dropdown_menu = OptionMenu(win, variable, *OPTIONS)
+    dropdown_menu.grid(column=1, row=6, sticky=W + E + N + S, columnspan=1)
+
+    def save():
+        compress_type = ""
+        if variable.get() == OPTIONS[0]:
+            compress_type = "none"
+        if variable.get() == OPTIONS[1]:
+            compress_type = "variable_byte"
+        if variable.get() == OPTIONS[0]:
+            compress_type = "gamma_code"
+        file_writer = FileWriter(index.doc_is_available, index.normalize_doc, index.all_tokens, index.bigram,
+                                 index.positional)
+        file_writer.write(compress_type)
+
+    btn_save = Button(win, text="Save index", command=save)
+    btn_save.grid(column=2, row=6, sticky=W + E + N + S, columnspan=1)
+    btn_load = Button(win, text="Load index")
+    btn_load.grid(column=3, row=6, sticky=W + E + N + S, columnspan=1)
+
+
 def initial_window(win):
     configure_size_window(win)
     configure_prepare_section(win)
     configure_index_section(win)
-
-    # TODO: Connect to gamma_code and variable_byte section
-    btn_save = Button(win, text="Save index")
-    btn_save.grid(column=1, row=6, sticky=W + E + N + S, columnspan=2)
-    btn_load = Button(win, text="Load index")
-    btn_load.grid(column=3, row=6, sticky=W + E + N + S, columnspan=1)
+    configure_save_load_section(win)
 
     entry_query = EntryWithPlaceholder(win, "Enter your query, Shakespeare book etc.")
     entry_query.grid(column=1, row=7, sticky=W + E + N + S, columnspan=2)
 
     configure_correct_query_section(win, entry_query)
-
     configure_search_section(win, entry_query)
 
 
