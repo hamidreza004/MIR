@@ -50,12 +50,16 @@ class FileWriter:
 
     def write_bigram(self, compress_type):
         file = open(self.path + "bigram.txt", "w")
-        file.write(json.dumps(self.get_compressed_bigram(compress_type)))
+        compressed_bigram = self.get_compressed_bigram(compress_type)
+        json_string = json.dumps(compressed_bigram, ensure_ascii=False).encode('utf8')
+        file.write(json_string.decode())
         file.close()
 
     def write_bigram_none(self):
         file = open(self.path + "bigram_none.txt", "w")
-        file.write(json.dumps(self.get_compressed_bigram("none")))
+        compressed_bigram = self.get_compressed_bigram("none")
+        json_string = json.dumps(compressed_bigram, ensure_ascii=False).encode('utf8')
+        file.write(json_string.decode())
         file.close()
 
     def get_bigram_size(self):
