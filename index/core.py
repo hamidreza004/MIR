@@ -6,8 +6,8 @@ positional = {}
 bigram = {}
 all_tokens = []
 doc_is_available = [True]
-# Can reproduce:
 normalize_doc = {}
+# Can reproduce:
 token_map = {}
 
 
