@@ -71,7 +71,7 @@ class NaiveBayes:
         predicted = []
         for doc_tfIdf in test_tfIdf:
             predicted.append(self.predict(doc_tfIdf))
-        for i, target in test_targets:
+        for i, target in enumerate(test_targets):
             if target == 1:
                 if predicted[i] == 1:
                     self.tp += 1
@@ -110,4 +110,5 @@ nb = NaiveBayes()
 nb.train(target_, vocab, tfIdf)
 print(nb.prior)
 print(nb.likelihood)
-print(nb.predict({"bad": 1}))
+nb.test(target_, tfIdf)
+print(nb.get_F1())
