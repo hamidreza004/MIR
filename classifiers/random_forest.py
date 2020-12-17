@@ -74,5 +74,3 @@ tfIdf = [{"good": 4, "bad": 1, "girl": 2, "boy": 2}, {"good": 1, "bad": 4, "girl
 rf = RandomForest()
 rf.train(target_, vocab, tfIdf)
 print(rf.predict({"bad": 1, "girl": 2, "good": 4, "boy": 2}))
-
-hello
