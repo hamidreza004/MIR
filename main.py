@@ -13,6 +13,7 @@ import search.LNC_LTC as LNC_LTC
 import search.proximity as proximity
 from file_handler.file_writer import FileWriter
 from file_handler.file_reader import FileReader
+from preprocess.TF_IDF import create_tf_idf
 
 
 def multiple(*func_list):
@@ -92,6 +93,7 @@ def configure_size_window(win):
     win.grid_rowconfigure(6, weight=1)
     win.grid_rowconfigure(7, weight=1)
     win.grid_rowconfigure(8, weight=1)
+    win.grid_rowconfigure(9, weight=1)
 
 
 stop_words = []
@@ -418,9 +420,9 @@ def configure_save_load_section(win):
         size_window.title("{}".format(variable.get()))
         size_window.geometry("400x100")
         size_label_1 = Label(size_window, text="Bigram:\nbefore = {}B, after = {}B".format(
-                                *file_writer.get_bigram_size()))
+            *file_writer.get_bigram_size()))
         size_label_2 = Label(size_window, text="Positional:\nbefore = {}B, after = {}B".format(
-                                *file_writer.get_positional_size()))
+            *file_writer.get_positional_size()))
         size_label_1.pack()
         size_label_2.pack()
         size_window.mainloop()
@@ -451,6 +453,23 @@ def configure_save_load_section(win):
     btn_load.grid(column=3, row=6, sticky=W + E + N + S, columnspan=1)
 
 
+def configure_classification_section(win):
+    def train_models():
+        filename = filedialog.askopenfilename()
+        df = pd.read_csv(filename)
+        df = df[['description', 'title']]
+        df, st_wds = eng.prepare_text(df)
+        df['text'] = df['description'] + df['title']
+        del df['description']
+        del df['title']
+        tf_idf = create_tf_idf(df)
+        print(tf_idf)
+        pass
+
+    btn_train = Button(win, text="Train Models", command=train_models)
+    btn_train.grid(column=1, row=9, sticky=W + E + N + S, columnspan=1)
+
+
 def initial_window(win):
     configure_size_window(win)
     configure_prepare_section(win)
@@ -462,6 +481,7 @@ def initial_window(win):
 
     configure_correct_query_section(win, entry_query)
     configure_search_section(win, entry_query)
+    configure_classification_section(win)
 
 
 window = tkinter.Tk()
