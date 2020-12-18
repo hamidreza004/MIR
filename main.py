@@ -467,32 +467,24 @@ def train_random_forest(tf_idf, target):
     global random_forest
     random_forest = RandomForest()
     random_forest.train(target, tf_idf)
-    random_forest.test(target, tf_idf)
-    print(random_forest.get_accuracy())
 
 
 def train_naive(vocab, tf_idf, target):
     global naive_bayes
     naive_bayes = NaiveBayes()
     naive_bayes.train(target, vocab, tf_idf)
-    naive_bayes.test(target, tf_idf)
-    print(naive_bayes.get_accuracy())
 
 
 def train_knn(vocab, tf_idf, target):
     global knn
     knn = KNN()
     knn.train(target, vocab, tf_idf)
-    knn.test(target, tf_idf)
-    print(knn.get_accuracy())
 
 
 def train_svm(tf_idf, target):
     global svm
     svm = SVM()
     svm.train(target, tf_idf)
-    svm.test(target, tf_idf)
-    print(svm.get_accuracy())
 
 
 def configure_classification_section(win):
@@ -505,14 +497,47 @@ def configure_classification_section(win):
         df['text'] = df['description'] + df['title']
         df = df[['text']]
         vocab, tf_idf = create_tf_idf(df)
-#        train_knn(vocab, tf_idf, target)
+        #        train_knn(vocab, tf_idf, target)
         train_naive(vocab, tf_idf, target)
         train_random_forest(tf_idf, target)
         train_svm(tf_idf, target)
-        pass
+        tk.messagebox.showinfo(title="Info", message="Successfully trained")
 
     btn_train = Button(win, text="Train Models", command=train_models)
     btn_train.grid(column=1, row=9, sticky=W + E + N + S, columnspan=1)
+
+    def test_models():
+        filename = filedialog.askopenfilename()
+        df = pd.read_csv(filename)
+        target = list(df['views'])
+        df = df[['description', 'title']]
+        df, st_wds = eng.prepare_text(df)
+        df['text'] = df['description'] + df['title']
+        df = df[['text']]
+        vocab, tf_idf = create_tf_idf(df)
+        random_forest.test(target, tf_idf)
+        naive_bayes.test(target, tf_idf)
+        # knn.test(target, tf_idf)
+        svm.test(target, tf_idf)
+        evaluate_window = Toplevel(win)
+        evaluate_window.title("Evaluation")
+        evaluate_window.geometry("250x400")
+
+        listbox = Listbox(evaluate_window)
+        for classifier in [naive_bayes, svm, random_forest]:
+            listbox.insert(END, classifier.__class__.__name__+":")
+            listbox.insert(END, "Accuracy: {} ".format(classifier.get_accuracy()))
+            listbox.insert(END, "F1 : {}".format(classifier.get_F1()))
+            listbox.insert(END, "Precision : {}".format(classifier.get_precision()))
+            listbox.insert(END, "Recall : {}".format(classifier.get_recall()))
+            listbox.insert(END, "")
+
+        listbox.pack(side=LEFT, fill=BOTH, expand=True)
+
+        pass
+
+    btn_test = Button(win, text="Test Models", command=test_models)
+    btn_test.grid(column=2, row=9, sticky=W + E + N + S, columnspan=1)
 
 
 def initial_window(win):
