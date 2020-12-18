@@ -47,6 +47,7 @@ class FileWriter:
 
     def write_label(self):
         file = open(self.path + "label.txt", "w")
+        print(self.label)
         file.write(json.dumps(self.label))
         file.close()
 

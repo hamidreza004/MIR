@@ -535,7 +535,7 @@ def configure_classification_section(win):
         df['text'] = df['description'] + df['title']
         df = df[['text']]
         vocab, tf_idf = create_tf_idf(df)
-        #        train_knn(vocab, tf_idf, target)
+        train_knn(vocab, tf_idf, target)
         print("Loading...")
         train_naive(vocab, tf_idf, target)
         train_random_forest(tf_idf, target)
@@ -556,14 +556,14 @@ def configure_classification_section(win):
         vocab, tf_idf = create_tf_idf(df)
         random_forest.test(target, tf_idf)
         naive_bayes.test(target, tf_idf)
-        # knn.test(target, tf_idf)
+        knn.test(target, tf_idf)
         svm.test(target, tf_idf)
         evaluate_window = Toplevel(win)
         evaluate_window.title("Evaluation")
         evaluate_window.geometry("250x400")
 
         listbox = Listbox(evaluate_window)
-        for classifier in [naive_bayes, svm, random_forest]:  # add knn to this section
+        for classifier in [naive_bayes, knn, svm, random_forest]:
             listbox.insert(END, classifier.__class__.__name__ + ":")
             listbox.insert(END, "Accuracy: {} ".format(classifier.get_accuracy()))
             listbox.insert(END, "F1 : {}".format(classifier.get_F1()))

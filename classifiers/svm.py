@@ -63,29 +63,29 @@ class SVM:
         R = self.get_recall()
         return (2 * P * R) / (P + R)
 
-
-target_ = [1, -1]
-tfIdf = [{"good": 4, "bad": 0, "girl": 2, "boy": 2}, {"good": 1, "bad": 4, "boy": 20}]
-
-
-X_train = []
-y_train = []
-
-validation_data = X_train[:int(len(X_train) * 0.1)]
-validation_target = y_train[:int(len(y_train) * 0.1)]
-train_data = X_train[int(len(X_train) * 0.1):]
-train_target = y_train[int(len(y_train) * 0.1):]
-
-C_VALUES = [0.5, 1, 1.5, 2]
-
-svm = SVM()
-arg_max = 0
-max_acc = 0
-
-for c in C_VALUES:
-    svm.train(train_target, train_data, C=c)
-    svm.test(validation_target, validation_data)
-    acc = svm.get_accuracy()
-    if acc > max_acc:
-        max_acc = acc
-        arg_max = c
+#
+# target_ = [1, -1]
+# tfIdf = [{"good": 4, "bad": 0, "girl": 2, "boy": 2}, {"good": 1, "bad": 4, "boy": 20}]
+#
+#
+# X_train = []
+# y_train = []
+#
+# validation_data = X_train[:int(len(X_train) * 0.1)]
+# validation_target = y_train[:int(len(y_train) * 0.1)]
+# train_data = X_train[int(len(X_train) * 0.1):]
+# train_target = y_train[int(len(y_train) * 0.1):]
+#
+# C_VALUES = [0.5, 1, 1.5, 2]
+#
+# svm = SVM()
+# arg_max = 0
+# max_acc = 0
+#
+# for c in C_VALUES:
+#     svm.train(train_target, train_data, C=c)
+#     svm.test(validation_target, validation_data)
+#     acc = svm.get_accuracy()
+#     if acc > max_acc:
+#         max_acc = acc
+#         arg_max = c
