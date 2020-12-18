@@ -14,6 +14,10 @@ import search.proximity as proximity
 from file_handler.file_writer import FileWriter
 from file_handler.file_reader import FileReader
 from preprocess.TF_IDF import create_tf_idf
+from classifiers.random_forest import RandomForest
+from classifiers.svm import SVM
+from classifiers.naive_bayes import NaiveBayes
+from classifiers.knn import KNN
 
 
 def multiple(*func_list):
@@ -453,6 +457,20 @@ def configure_save_load_section(win):
     btn_load.grid(column=3, row=6, sticky=W + E + N + S, columnspan=1)
 
 
+random_forest = None
+naive_bayes = None
+knn = None
+svm = None
+
+
+def train_random_forest(tf_idf, target):
+    global random_forest
+    random_forest = RandomForest()
+    random_forest.train(target, tf_idf)
+    random_forest.test(target, tf_idf)
+    print(random_forest.get_accuracy())
+
+
 def configure_classification_section(win):
     def train_models():
         filename = filedialog.askopenfilename()
@@ -463,6 +481,10 @@ def configure_classification_section(win):
         df['text'] = df['description'] + df['title']
         df = df[['text']]
         vocab, tf_idf = create_tf_idf(df)
+#        train_knn(vocab, tf_idf, target)
+#        train_naive(vocab, tf_idf, target)
+        train_random_forest(tf_idf, target)
+#        train_svm(tf_idf, target)
         pass
 
     btn_train = Button(win, text="Train Models", command=train_models)

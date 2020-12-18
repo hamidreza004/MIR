@@ -68,4 +68,3 @@ tfIdf = [{"good": 4, "bad": 0, "girl": 2, "boy": 2}, {"good": 1, "bad": 4, "boy"
 
 svm = SVM()
 svm.train(target_, tfIdf, C=5)
-print(svm.predict({"bad": 100, "girl": 0, "good": 0, "boy": 2, "hos": 323}))

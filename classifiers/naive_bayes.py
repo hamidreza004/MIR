@@ -110,8 +110,4 @@ tfIdf = [{"good": 4, "bad": 1, "boy": 2}, {"good": 1, "bad": 4, "girl": 5, "boy"
 
 nb = NaiveBayes()
 nb.train(target_, vocab, tfIdf)
-print(nb.prior)
-print(nb.likelihood)
 nb.test(target_, tfIdf)
-print(nb.get_F1())
-print(nb.predict({"good": 1, "bad": 4, "girl": 5, "hosr": 35}))
