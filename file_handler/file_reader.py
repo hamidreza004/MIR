@@ -15,14 +15,14 @@ class FileReader:
         self.label = dict()
         self.path = "IR_files/"
 
-    def read(self, compress_tyep):
+    def read(self, compress_type):
         self.read_stop_words()
         self.read_doc_is_available()
         self.read_normalized_docs()
         self.read_all_tokens()
         self.read_label()
-        self.read_bigram(compress_tyep)
-        self.read_positional(compress_tyep)
+        self.read_bigram(compress_type)
+        self.read_positional(compress_type)
 
     def read_stop_words(self):
         file = open(self.path + "stop_words.txt", "r")
