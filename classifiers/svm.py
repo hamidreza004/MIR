@@ -26,7 +26,7 @@ class SVM:
                 x.append(doc_tfIdf.get(term))
             else:
                 x.append(0)
-        return self.clf.predict([x])
+        return self.clf.predict([x])[0]
 
     def test(self, test_targets, test_tfIdf):
         self.tp = 0
