@@ -55,7 +55,7 @@ class NaiveBayes:
             p_c = math.log(self.prior.get(c))
             for term in document_tfIdf:
                 if term in self.likelihood.get(c):
-                    p_c += document_tfIdf.get(term) * self.likelihood.get(c).get(term)
+                    p_c += document_tfIdf.get(term) * math.log(self.likelihood.get(c).get(term))
                 else:
                     p_c += 1 / self.total[c]
             p[c] = p_c
