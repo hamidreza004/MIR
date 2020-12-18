@@ -71,6 +71,6 @@ target_ = [1, -1]
 vocab = ["good", "bad", "girl", "boy"]
 tfIdf = [{"good": 4, "bad": 1, "girl": 2, "boy": 2}, {"good": 1, "bad": 4, "girl": 5, "boy": 2}]
 
-rf = SVM()
-rf.train(target_, vocab, tfIdf, C=5)
-print(rf.predict({"bad": 1, "girl": 2, "good": 4, "boy": 2}))
+svm = SVM()
+svm.train(target_, vocab, tfIdf, C=5)
+print(svm.predict({"bad": 1, "girl": 2, "good": 4, "boy": 2}))
