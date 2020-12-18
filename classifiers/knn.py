@@ -29,11 +29,16 @@ class KNN:
             neighbors.append(distances[i][0])
         return neighbors
 
-    def train_specified(self, train_targets, train_vocab, train_tfIdf, k=1):
+    def train(self, train_targets, train_vocab, train_tfIdf):
         self.vocab = train_vocab
-        self.k = k
+
+        validation_data = train_tfIdf[:int(len(train_tfIdf) * 0.1)]
+        validation_target = train_targets[:int(len(train_targets) * 0.1)]
+        train_data = train_tfIdf[int(len(train_tfIdf) * 0.1):]
+        train_target = train_targets[int(len(train_targets) * 0.1):]
+
         data = []
-        for i, doc in enumerate(train_tfIdf):
+        for i, doc in enumerate(train_data):
             x = []
             for term in train_vocab:
                 if term in doc.keys():
@@ -41,25 +46,21 @@ class KNN:
                 else:
                     x.append(0)
 
-            x.append(train_targets[i])
+            x.append(train_target[i])
             data.append(x)
 
         self.data = data
 
-    def train(self, train_targets, train_vocab, train_tfIdf):
-        validation_data = train_tfIdf[:int(len(train_tfIdf) * 0.1)]
-        validation_target = train_targets[:int(len(train_targets) * 0.1)]
-        train_data = train_tfIdf[int(len(train_tfIdf) * 0.1):]
-        train_target = train_targets[int(len(train_targets) * 0.1):]
-
         K_VALUES = [1, 5, 9]
 
         knn = KNN()
+        knn.data = data
+        knn.vocab = train_vocab
         arg_max = 0
         max_acc = 0
 
         for k in K_VALUES:
-            knn.train_specified(train_target, train_vocab, train_data, k=k)
+            knn.k = k
             knn.test(validation_target, validation_data)
             acc = knn.get_accuracy()
             print("knn k / acc", k, acc)

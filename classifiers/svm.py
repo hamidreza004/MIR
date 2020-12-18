@@ -41,7 +41,7 @@ class SVM:
                 arg_max = c
 
         print("svm arg_max / max_acc", arg_max, max_acc)
-        svm.train_specified(train_target, train_data, C=arg_max)
+        self.train_specified(train_target, train_data, C=arg_max)
 
     def predict(self, doc_tfIdf):
         x = []
