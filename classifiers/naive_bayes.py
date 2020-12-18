@@ -24,9 +24,11 @@ class NaiveBayes:
             count_term_c2 = 0
             for doc_id, target in enumerate(train_targets):
                 if target == 1:
-                    count_term_c1 += train_tfIdf[doc_id].get(term)
+                    if term in train_tfIdf[doc_id]:
+                        count_term_c1 += train_tfIdf[doc_id].get(term)
                 elif target == -1:
-                    count_term_c2 += train_tfIdf[doc_id].get(term)
+                    if term in train_tfIdf[doc_id]:
+                        count_term_c2 += train_tfIdf[doc_id].get(term)
             t[1][term] = count_term_c1
             total[1] += count_term_c1
             t[-1][term] = count_term_c2
@@ -51,8 +53,8 @@ class NaiveBayes:
         p = {}
         for c in [1, -1]:
             p_c = math.log(self.prior.get(c))
-            for term in document_tfIdf.keys():
-                if term in self.likelihood.get(c).keys():
+            for term in document_tfIdf:
+                if term in self.likelihood.get(c):
                     p_c += document_tfIdf.get(term) * self.likelihood.get(c).get(term)
                 else:
                     p_c += 1 / self.total[c]
@@ -104,7 +106,7 @@ class NaiveBayes:
 
 target_ = [1, -1]
 vocab = ["good", "bad", "girl", "boy"]
-tfIdf = [{"good": 4, "bad": 1, "girl": 2, "boy": 2}, {"good": 1, "bad": 4, "girl": 5, "boy": 2}]
+tfIdf = [{"good": 4, "bad": 1, "boy": 2}, {"good": 1, "bad": 4, "girl": 5, "boy": 2}]
 
 nb = NaiveBayes()
 nb.train(target_, vocab, tfIdf)
@@ -112,3 +114,4 @@ print(nb.prior)
 print(nb.likelihood)
 nb.test(target_, tfIdf)
 print(nb.get_F1())
+print(nb.predict({"good": 1, "bad": 4, "girl": 5, "hosr": 35}))
