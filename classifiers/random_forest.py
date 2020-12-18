@@ -1,34 +1,30 @@
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction import DictVectorizer
 
 
 class RandomForest:
     def __init__(self):
         self.clf = None
-        self.vocab = []
+        self.v = None
         self.tp = 0
         self.tn = 0
         self.fp = 0
         self.fn = 0
 
-    def train(self, train_targets, train_vocab, train_tfIdf):
-        self.vocab = train_vocab
-        X = []
-        for doc in train_tfIdf:
-            x = []
-            for term in train_vocab:
-                x.append(doc.get(term))
-            X.append(x)
+    def train(self, train_targets, train_tfIdf):
+        v = DictVectorizer(sparse=False)
+        X = v.fit_transform(train_tfIdf)
+        self.v = v
         y = train_targets
         self.clf = RandomForestClassifier(max_depth=2, random_state=0)
         self.clf.fit(X, y)
 
     def predict(self, doc_tfIdf):
-        x = []
-        for term in self.vocab:
-            if term in doc_tfIdf.keys():
-                x.append(doc_tfIdf.get(term))
-            else:
-                x.append(0)
+        valid_terms = {}
+        for term in doc_tfIdf.keys():
+            if term in self.v.get_feature_names():
+                valid_terms[term] = doc_tfIdf.get(term)
+        x = self.v.fit_transform(valid_terms)[0]
         return self.clf.predict([x])
 
     def test(self, test_targets, test_tfIdf):
@@ -68,9 +64,8 @@ class RandomForest:
 
 
 target_ = [1, -1]
-vocab = ["good", "bad", "girl", "boy"]
 tfIdf = [{"good": 4, "bad": 1, "girl": 2, "boy": 2}, {"good": 1, "bad": 4, "girl": 5, "boy": 2}]
 
 rf = RandomForest()
-rf.train(target_, vocab, tfIdf)
-print(rf.predict({"bad": 1, "girl": 2, "good": 4, "boy": 2}))
+rf.train(target_, tfIdf)
+print(rf.predict({"bad": 1, "girl": 5, "good": 1, "boy": 2}))
