@@ -99,5 +99,25 @@ target_ = [1, -1]
 vocab = ["good", "bad", "girl", "boy"]
 tfIdf = [{"good": 4, "bad": 1, "girl": 2, "boy": 2}, {"good": 1, "bad": 4, "girl": 5, "boy": 2}]
 
+
+X_train = []
+y_train = []
+
+validation_data = X_train[:int(len(X_train) * 0.1)]
+validation_target = y_train[:int(len(y_train) * 0.1)]
+train_data = X_train[int(len(X_train) * 0.1):]
+train_target = y_train[int(len(y_train) * 0.1):]
+
+K_VALUES = [1, 5, 9]
+
 knn = KNN()
-knn.train(target_, vocab, tfIdf, k=1)
+arg_max = 0
+max_acc = 0
+
+for k in K_VALUES:
+    knn.train(train_target, train_data, k=k)
+    knn.test(validation_target, validation_data)
+    acc = knn.get_accuracy()
+    if acc > max_acc:
+        max_acc = acc
+        arg_max = k
