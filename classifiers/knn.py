@@ -29,7 +29,7 @@ class KNN:
             neighbors.append(distances[i][0])
         return neighbors
 
-    def train(self, train_targets, train_vocab, train_tfIdf, k=1):
+    def train_specified(self, train_targets, train_vocab, train_tfIdf, k=1):
         self.vocab = train_vocab
         self.k = k
         data = []
@@ -45,6 +45,30 @@ class KNN:
             data.append(x)
 
         self.data = data
+
+    def train(self, train_targets, train_vocab, train_tfIdf):
+        validation_data = train_tfIdf[:int(len(train_tfIdf) * 0.1)]
+        validation_target = train_targets[:int(len(train_targets) * 0.1)]
+        train_data = train_tfIdf[int(len(train_tfIdf) * 0.1):]
+        train_target = train_targets[int(len(train_targets) * 0.1):]
+
+        K_VALUES = [1, 5, 9]
+
+        knn = KNN()
+        arg_max = 0
+        max_acc = 0
+
+        for k in K_VALUES:
+            knn.train_specified(train_target, train_vocab, train_data, k=k)
+            knn.test(validation_target, validation_data)
+            acc = knn.get_accuracy()
+            print("knn k / acc", k, acc)
+            if acc > max_acc:
+                max_acc = acc
+                arg_max = k
+
+        print("knn arg_max / max_acc", arg_max, max_acc)
+        self.k = arg_max
 
     def predict(self, doc_tfIdf):
         x = []
@@ -93,31 +117,9 @@ class KNN:
         P = self.get_precision()
         R = self.get_recall()
         return (2 * P * R) / (P + R)
-#
-#
+
+
 # target_ = [1, -1]
 # vocab = ["good", "bad", "girl", "boy"]
 # tfIdf = [{"good": 4, "bad": 1, "girl": 2, "boy": 2}, {"good": 1, "bad": 4, "girl": 5, "boy": 2}]
-#
-#
-# X_train = []
-# y_train = []
-#
-# validation_data = X_train[:int(len(X_train) * 0.1)]
-# validation_target = y_train[:int(len(y_train) * 0.1)]
-# train_data = X_train[int(len(X_train) * 0.1):]
-# train_target = y_train[int(len(y_train) * 0.1):]
-#
-# K_VALUES = [1, 5, 9]
-#
-# knn = KNN()
-# arg_max = 0
-# max_acc = 0
-#
-# for k in K_VALUES:
-#     knn.train(train_target, train_data, k=k)
-#     knn.test(validation_target, validation_data)
-#     acc = knn.get_accuracy()
-#     if acc > max_acc:
-#         max_acc = acc
-#         arg_max = k
+

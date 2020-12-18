@@ -11,13 +11,37 @@ class SVM:
         self.fp = 0
         self.fn = 0
 
-    def train(self, train_targets, train_tfIdf, C=1.0):
+    def train_specified(self, train_targets, train_tfIdf, C=1.0):
         v = DictVectorizer(sparse=False)
         X = v.fit_transform(train_tfIdf)
         self.v = v
         y = train_targets
         self.clf = SVC(C=C)
         self.clf.fit(X, y)
+
+    def train(self, train_targets, train_tfIdf):
+        validation_data = train_tfIdf[:int(len(train_tfIdf) * 0.1)]
+        validation_target = train_targets[:int(len(train_targets) * 0.1)]
+        train_data = train_tfIdf[int(len(train_tfIdf) * 0.1):]
+        train_target = train_targets[int(len(train_targets) * 0.1):]
+
+        C_VALUES = [0.5, 1, 1.5, 2]
+
+        svm = SVM()
+        arg_max = 0
+        max_acc = 0
+
+        for c in C_VALUES:
+            svm.train_specified(train_target, train_data, C=c)
+            svm.test(validation_target, validation_data)
+            acc = svm.get_accuracy()
+            print("svm C / acc", c, acc)
+            if acc > max_acc:
+                max_acc = acc
+                arg_max = c
+
+        print("svm arg_max / max_acc", arg_max, max_acc)
+        svm.train_specified(train_target, train_data, C=arg_max)
 
     def predict(self, doc_tfIdf):
         x = []
