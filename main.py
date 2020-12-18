@@ -207,7 +207,8 @@ def configure_change_index_section(win):
         else:
             lang = per
         id = index.add_single_document(stopwords_core.remove_stop_words(lang.clean_raw(desc), stop_words),
-                                       stopwords_core.remove_stop_words(lang.clean_raw(title), stop_words), random_forest)
+                                       stopwords_core.remove_stop_words(lang.clean_raw(title), stop_words),
+                                       random_forest)
         tk.messagebox.showinfo(title="Info", message="Your enter document added with ID {}".format(id))
 
     btn_add_doc = Button(win, text="Add single document", command=add_document_clicked)
@@ -381,7 +382,21 @@ def configure_search_section(win, entry_query):
             lang = per
         tokens = stopwords_core.remove_stop_words(lang.tokenize_raw(query), stop_words)
         token_ids = [index.get_token_id(token) for token in tokens]
-        score_documents = LNC_LTC.search(token_ids, index)
+
+        if variable.get() == OPTIONS[0]:
+            score_documents = LNC_LTC.search(token_ids, index)
+        else:
+            documents = []
+            if variable.get() == OPTIONS[1]:
+                for doc in range(1, len(index.doc_is_available)):
+                    if index.label[doc] == +1:
+                        documents.append(doc)
+            if variable.get() == OPTIONS[2]:
+                for doc in range(1, len(index.doc_is_available)):
+                    if index.label[doc] == -1:
+                        documents.append(doc)
+            score_documents = LNC_LTC.search(token_ids, index, documents)
+
         show_score_table(score_documents, "Search results")
 
     btn_search_lnc = Button(win, text="LNC-LTC search", command=lncltc_search_clicked)
@@ -399,7 +414,20 @@ def configure_search_section(win, entry_query):
             lang = per
         tokens = stopwords_core.remove_stop_words(lang.tokenize_raw(query), stop_words)
         token_ids = [index.get_token_id(token) for token in tokens]
-        score_title_docs, score_desc_docs = proximity.search(token_ids, index, window_size)
+        if variable.get() == OPTIONS[0]:
+            score_title_docs, score_desc_docs = proximity.search(token_ids, index, window_size)
+        else:
+            documents = []
+            if variable.get() == OPTIONS[1]:
+                for doc in range(1, len(index.doc_is_available)):
+                    if index.label[doc] == +1:
+                        documents.append(doc)
+            if variable.get() == OPTIONS[2]:
+                for doc in range(1, len(index.doc_is_available)):
+                    if index.label[doc] == -1:
+                        documents.append(doc)
+            score_title_docs, score_desc_docs = proximity.search(token_ids, index, window_size, documents)
+
         show_score_table(score_title_docs, "Search results on titles")
         show_score_table(score_desc_docs, "Search results on descriptions")
 

@@ -30,11 +30,13 @@ def is_document_with_window_terms(doc, max_pos, token_ids, index, window_size, t
     return False
 
 
-def search(token_ids, index, window_size):
+def search(token_ids, index, window_size, documents=None):
     title_docs = []
     desc_docs = []
     for tmp_doc_pos in index.positional[token_ids[0]]:
         doc = tmp_doc_pos[0]
+        if documents is not None and doc not in documents:
+            continue
         max_pos = tmp_doc_pos[1][-1] // 2 + 1
         if is_document_with_window_terms(doc, max_pos, token_ids, index, window_size, True):
             title_docs.append(doc)
