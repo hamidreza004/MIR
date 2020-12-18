@@ -9,9 +9,9 @@ bigram = {}
 all_tokens = []
 doc_is_available = [True]
 normalize_doc = {}
+label = {}
 # Can reproduce:
 token_map = {}
-label = {}
 
 
 def token_exists(token):

@@ -455,8 +455,7 @@ def configure_save_load_section(win):
         if variable.get() == OPTIONS[2]:
             compress_type = "gamma_code"
         file_writer = FileWriter(stop_words, index.doc_is_available, index.normalize_doc, index.all_tokens,
-                                 index.bigram,
-                                 index.positional)
+                                 index.bigram, index.positional, index.label)
         file_writer.write(compress_type)
         size_window = Toplevel(win)
         size_window.title("{}".format(variable.get()))
@@ -486,6 +485,7 @@ def configure_save_load_section(win):
         index.bigram = file_reader.bigram
         index.positional = file_reader.positional
         index.token_map = file_reader.token_map
+        index.label = file_reader.label
         stop_words = file_reader.stop_words
         tk.messagebox.showinfo(title="Done", message="Load successfully")
 

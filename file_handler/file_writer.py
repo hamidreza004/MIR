@@ -5,13 +5,14 @@ from compressor.variable_byte import VariableByteCompressor
 
 
 class FileWriter:
-    def __init__(self, stop_words, doc_is_available, normalized_docs, all_tokens, bigram, positional):
+    def __init__(self, stop_words, doc_is_available, normalized_docs, all_tokens, bigram, positional, label):
         self.stop_words = stop_words
         self.doc_is_available = doc_is_available
         self.normalized_docs = normalized_docs
         self.all_tokens = all_tokens
         self.bigram = bigram
         self.positional = positional
+        self.label = label
         self.path = "IR_files/"
         try:
             os.mkdir(self.path)
@@ -25,6 +26,7 @@ class FileWriter:
         self.write_all_tokens()
         self.write_positional_none()
         self.write_bigram_none()
+        self.write_label()
         self.write_bigram(compress_type)
         self.write_positional(compress_type)
 
@@ -41,6 +43,11 @@ class FileWriter:
     def write_normailzed_docs(self):
         file = open(self.path + "normalized_docs.txt", "w")
         file.write(json.dumps(self.normalized_docs))
+        file.close()
+
+    def write_label(self):
+        file = open(self.path + "label.txt", "w")
+        file.write(json.dumps(self.label))
         file.close()
 
     def write_all_tokens(self):

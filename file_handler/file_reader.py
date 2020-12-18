@@ -12,6 +12,7 @@ class FileReader:
         self.token_map = dict()
         self.bigram = dict()
         self.positional = dict()
+        self.label = dict()
         self.path = "IR_files/"
 
     def read(self, compress_tyep):
@@ -19,6 +20,7 @@ class FileReader:
         self.read_doc_is_available()
         self.read_normalized_docs()
         self.read_all_tokens()
+        self.read_label()
         self.read_bigram(compress_tyep)
         self.read_positional(compress_tyep)
 
@@ -36,6 +38,12 @@ class FileReader:
         file = open(self.path + "normalized_docs.txt", "r")
         self.normalized_docs = json.loads(file.read())
         self.normalized_docs = {int(k): v for k, v in self.normalized_docs.items()}
+        file.close()
+
+    def read_label(self):
+        file = open(self.path + "label.txt", "r")
+        self.label = json.loads(file.read())
+        self.label = {int(k): v for k, v in self.label.items()}
         file.close()
 
     def read_all_tokens(self):
