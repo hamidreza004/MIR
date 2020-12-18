@@ -111,7 +111,7 @@ def configure_prepare_section(win):
         df = pd.read_csv(filename)
         df = df[['description', 'title']]
         df, stop_words = eng.prepare_text(df)
-        index.add_multiple_documents(df)
+        index.add_multiple_documents(df, random_forest)
 
         stopwords_window = Toplevel(win)
         stopwords_window.title("Stopwords found (TOP {}%)".format(eng.stop_word_ratio * 100))
@@ -155,7 +155,7 @@ def configure_prepare_section(win):
         df = XML_to_dataframe(filename)
         df = df[['description', 'title']]
         df, stop_words = per.prepare_text(df)
-        index.add_multiple_documents(df)
+        index.add_multiple_documents(df, random_forest)
 
         stopwords_window = Toplevel(win)
         stopwords_window.title("Stopwords found (TOP {}%)".format(per.stop_word_ratio * 100))
@@ -207,7 +207,7 @@ def configure_change_index_section(win):
         else:
             lang = per
         id = index.add_single_document(stopwords_core.remove_stop_words(lang.clean_raw(desc), stop_words),
-                                       stopwords_core.remove_stop_words(lang.clean_raw(title), stop_words))
+                                       stopwords_core.remove_stop_words(lang.clean_raw(title), stop_words), random_forest)
         tk.messagebox.showinfo(title="Info", message="Your enter document added with ID {}".format(id))
 
     btn_add_doc = Button(win, text="Add single document", command=add_document_clicked)
@@ -353,6 +353,16 @@ def configure_correct_query_section(win, entry_query):
 
 
 def configure_search_section(win, entry_query):
+    OPTIONS = [
+        "No-filter",
+        "Popular",
+        "Not-Popular",
+    ]
+    variable = StringVar(win)
+    variable.set(OPTIONS[0])  # default value
+    dropdown_menu = OptionMenu(win, variable, *OPTIONS)
+    dropdown_menu.grid(column=3, row=7, sticky=W + E + N + S, columnspan=1)
+
     def show_score_table(score_documents, title_of_window):
         search_results_window = Toplevel(win)
         search_results_window.title(title_of_window)
@@ -395,15 +405,6 @@ def configure_search_section(win, entry_query):
 
     btn_search_prox = Button(win, text="Proximity search", command=proximity_search_clicked)
     btn_search_prox.grid(column=3, row=8, sticky=W + E + N + S, columnspan=1)
-
-    OPTIONS = [
-        "Popular",
-        "Not-Popular",
-    ]
-    variable = StringVar(win)
-    variable.set(OPTIONS[0])  # default value
-    dropdown_menu = OptionMenu(win, variable, *OPTIONS)
-    dropdown_menu.grid(column=3, row=7, sticky=W + E + N + S, columnspan=1)
 
 
 def configure_save_load_section(win):
