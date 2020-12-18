@@ -16,15 +16,16 @@ class RandomForest:
         X = v.fit_transform(train_tfIdf)
         self.v = v
         y = train_targets
-        self.clf = RandomForestClassifier(max_depth=2, random_state=0)
+        self.clf = RandomForestClassifier(max_depth=30, random_state=0)
         self.clf.fit(X, y)
 
     def predict(self, doc_tfIdf):
-        valid_terms = {}
-        for term in doc_tfIdf.keys():
-            if term in self.v.get_feature_names():
-                valid_terms[term] = doc_tfIdf.get(term)
-        x = self.v.fit_transform(valid_terms)[0]
+        x = []
+        for term in self.v.get_feature_names():
+            if term in doc_tfIdf:
+                x.append(doc_tfIdf.get(term))
+            else:
+                x.append(0)
         return self.clf.predict([x])
 
     def test(self, test_targets, test_tfIdf):
