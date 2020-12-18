@@ -378,7 +378,7 @@ def configure_search_section(win, entry_query):
     btn_search_lnc.grid(column=2, row=8, sticky=W + E + N + S, columnspan=1)
 
     entry_window_size = EntryWithPlaceholder(win, "Enter your window size, 5 etc.")
-    entry_window_size.grid(column=3, row=7, sticky=W + E + N + S, columnspan=1)
+    entry_window_size.grid(column=2, row=7, sticky=W + E + N + S, columnspan=1)
 
     def proximity_search_clicked():
         query = entry_query.get()
@@ -395,6 +395,15 @@ def configure_search_section(win, entry_query):
 
     btn_search_prox = Button(win, text="Proximity search", command=proximity_search_clicked)
     btn_search_prox.grid(column=3, row=8, sticky=W + E + N + S, columnspan=1)
+
+    OPTIONS = [
+        "Popular",
+        "Not-Popular",
+    ]
+    variable = StringVar(win)
+    variable.set(OPTIONS[0])  # default value
+    dropdown_menu = OptionMenu(win, variable, *OPTIONS)
+    dropdown_menu.grid(column=3, row=7, sticky=W + E + N + S, columnspan=1)
 
 
 def configure_save_load_section(win):
@@ -524,8 +533,8 @@ def configure_classification_section(win):
         evaluate_window.geometry("250x400")
 
         listbox = Listbox(evaluate_window)
-        for classifier in [naive_bayes, svm, random_forest]:
-            listbox.insert(END, classifier.__class__.__name__+":")
+        for classifier in [naive_bayes, svm, random_forest]:  # add knn to this section
+            listbox.insert(END, classifier.__class__.__name__ + ":")
             listbox.insert(END, "Accuracy: {} ".format(classifier.get_accuracy()))
             listbox.insert(END, "F1 : {}".format(classifier.get_F1()))
             listbox.insert(END, "Precision : {}".format(classifier.get_precision()))
@@ -546,7 +555,7 @@ def initial_window(win):
     configure_index_section(win)
     configure_save_load_section(win)
 
-    entry_query = EntryWithPlaceholder(win, "Enter your query, Shakespeare book etc.")
+    entry_query = EntryWithPlaceholder(win, "Enter your query, Shakespeare etc.")
     entry_query.grid(column=1, row=7, sticky=W + E + N + S, columnspan=2)
 
     configure_correct_query_section(win, entry_query)
