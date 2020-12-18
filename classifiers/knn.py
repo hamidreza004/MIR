@@ -36,7 +36,10 @@ class KNN:
         for i, doc in enumerate(train_tfIdf):
             x = []
             for term in train_vocab:
-                x.append(doc.get(term))
+                if term in doc.keys():
+                    x.append(doc.get(term))
+                else:
+                    x.append(0)
 
             x.append(train_targets[i])
             data.append(x)
