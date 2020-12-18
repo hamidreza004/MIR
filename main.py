@@ -471,6 +471,30 @@ def train_random_forest(tf_idf, target):
     print(random_forest.get_accuracy())
 
 
+def train_naive(vocab, tf_idf, target):
+    global naive_bayes
+    naive_bayes = NaiveBayes()
+    naive_bayes.train(target, vocab, tf_idf)
+    naive_bayes.test(target, tf_idf)
+    print(naive_bayes.get_accuracy())
+
+
+def train_knn(vocab, tf_idf, target):
+    global knn
+    knn = KNN()
+    knn.train(target, vocab, tf_idf)
+    knn.test(target, tf_idf)
+    print(knn.get_accuracy())
+
+
+def train_svm(tf_idf, target):
+    global svm
+    svm = SVM()
+    svm.train(target, tf_idf)
+    svm.test(target, tf_idf)
+    print(svm.get_accuracy())
+
+
 def configure_classification_section(win):
     def train_models():
         filename = filedialog.askopenfilename()
@@ -481,10 +505,10 @@ def configure_classification_section(win):
         df['text'] = df['description'] + df['title']
         df = df[['text']]
         vocab, tf_idf = create_tf_idf(df)
-#        train_knn(vocab, tf_idf, target)
-#        train_naive(vocab, tf_idf, target)
+        train_knn(vocab, tf_idf, target)
+        train_naive(vocab, tf_idf, target)
         train_random_forest(tf_idf, target)
-#        train_svm(tf_idf, target)
+        train_svm(tf_idf, target)
         pass
 
     btn_train = Button(win, text="Train Models", command=train_models)
