@@ -2,10 +2,8 @@ import math
 
 
 def create_tf_idf(df):
-    print(df)
     document_freq = {}
     for index, row in df.iterrows():
-        print(row)
         doc = row['text']
         mark = {}
         for word in doc:
@@ -28,4 +26,4 @@ def create_tf_idf(df):
         for word in term_freq:
             tf_idf_doc[word] = term_freq[word] * math.log(df.shape[0] / document_freq[word])
         tf_idf.append(tf_idf_doc)
-    return tf_idf
+    return list(document_freq.keys()), tf_idf

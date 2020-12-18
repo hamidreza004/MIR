@@ -457,13 +457,12 @@ def configure_classification_section(win):
     def train_models():
         filename = filedialog.askopenfilename()
         df = pd.read_csv(filename)
+        target = list(df['views'])
         df = df[['description', 'title']]
         df, st_wds = eng.prepare_text(df)
         df['text'] = df['description'] + df['title']
-        del df['description']
-        del df['title']
-        tf_idf = create_tf_idf(df)
-        print(tf_idf)
+        df = df[['text']]
+        vocab, tf_idf = create_tf_idf(df)
         pass
 
     btn_train = Button(win, text="Train Models", command=train_models)
