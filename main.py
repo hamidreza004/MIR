@@ -505,7 +505,7 @@ def configure_classification_section(win):
         df['text'] = df['description'] + df['title']
         df = df[['text']]
         vocab, tf_idf = create_tf_idf(df)
-        train_knn(vocab, tf_idf, target)
+#        train_knn(vocab, tf_idf, target)
         train_naive(vocab, tf_idf, target)
         train_random_forest(tf_idf, target)
         train_svm(tf_idf, target)
