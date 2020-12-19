@@ -110,16 +110,3 @@ class NaiveBayes:
         P = self.get_precision_c2()
         R = self.get_recall_c2()
         return (2 * P * R) / (P + R)
-
-
-# good boy good boy good girl good girl bad             --> 1
-# bad bad boy boy girl bad bad good girl girl girl girl --> -1
-# good girl girl girl girl boy bad good good good       --> 1
-
-target_ = [1, -1]
-vocab = ["good", "bad", "girl", "boy"]
-tfIdf = [{"good": 4, "bad": 1, "boy": 2}, {"good": 1, "bad": 4, "girl": 5, "boy": 2}]
-
-nb = NaiveBayes()
-nb.train(target_, vocab, tfIdf)
-nb.test(target_, tfIdf)

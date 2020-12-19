@@ -59,8 +59,6 @@ class KNN:
         arg_max = 0
         max_acc = 0
 
-        # print("done pre")
-
         print("")
         for k in K_VALUES:
             knn.k = k
@@ -85,7 +83,6 @@ class KNN:
 
         neighbors = self.get_neighbors(x)
         output_values = [row[-1] for row in neighbors]
-        # print(output_values)
         prediction = max(set(output_values), key=output_values.count)
         return prediction
 
@@ -96,10 +93,8 @@ class KNN:
         self.target1_predicted2 = 0
 
         predicted = []
-        # print(len(test_targets))
         for i, doc_tfIdf in enumerate(test_tfIdf):
             predicted.append(self.predict(doc_tfIdf))
-            # print("predicted")
             if test_targets[i] == 1:
                 if predicted[i] == 1:
                     self.target1_predicted1 += 1
@@ -135,7 +130,3 @@ class KNN:
         P = self.get_precision_c2()
         R = self.get_recall_c2()
         return (2 * P * R) / (P + R)
-
-# target_ = [1, -1]
-# vocab = ["good", "bad", "girl", "boy"]
-# tfIdf = [{"good": 4, "bad": 1, "girl": 2, "boy": 2}, {"good": 1, "bad": 4, "girl": 5, "boy": 2}]

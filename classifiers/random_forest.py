@@ -50,7 +50,8 @@ class RandomForest:
                     self.target2_predicted2 += 1
 
     def get_accuracy(self):
-        return (self.target1_predicted1 + self.target2_predicted2) / (self.target1_predicted1 + self.target2_predicted2 + self.target2_predicted1 + self.target1_predicted2)
+        return (self.target1_predicted1 + self.target2_predicted2) / (
+                    self.target1_predicted1 + self.target2_predicted2 + self.target2_predicted1 + self.target1_predicted2)
 
     def get_precision_c1(self):
         return self.target1_predicted1 / (self.target1_predicted1 + self.target2_predicted1)
@@ -73,10 +74,3 @@ class RandomForest:
         P = self.get_precision_c2()
         R = self.get_recall_c2()
         return (2 * P * R) / (P + R)
-
-
-target_ = [1, -1]
-tfIdf = [{"good": 4, "bad": 1, "girl": 2, "boy": 2}, {"good": 1, "bad": 4, "girl": 5, "boy": 2}]
-
-rf = RandomForest()
-rf.train(target_, tfIdf)
