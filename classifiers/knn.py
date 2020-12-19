@@ -1,4 +1,5 @@
 from math import sqrt
+from random import sample
 
 
 def euclidean_distance(row1, row2):
@@ -44,10 +45,19 @@ class KNN:
             x.append(train_targets[i])
             data.append(x)
 
-        validation_data = train_tfIdf[:int(len(train_tfIdf) * 0.02)]
-        validation_target = train_targets[:int(len(train_targets) * 0.02)]
+        sample_size = int(len(train_tfIdf) * 0.3)
+        sample_indices = sample(range(0, len(train_tfIdf)), sample_size)
+        validation_size = int(sample_size * 0.1)
 
-        train_data = data[int(len(data) * 0.04):int(len(data) * 0.4)]
+        validation_data = []
+        validation_target = []
+        for index in sample_indices[0:validation_size]:
+            validation_data.append(train_tfIdf[index])
+            validation_target.append(train_targets[index])
+
+        train_data = []
+        for index in sample_indices[validation_size: sample_size]:
+            train_data.append(data[index])
 
         self.data = train_data
 
@@ -107,7 +117,8 @@ class KNN:
                     self.target2_predicted2 += 1
 
     def get_accuracy(self):
-        return (self.target1_predicted1 + self.target2_predicted2) / (self.target1_predicted1 + self.target2_predicted2 + self.target2_predicted1 + self.target1_predicted2)
+        return (self.target1_predicted1 + self.target2_predicted2) / (
+                self.target1_predicted1 + self.target2_predicted2 + self.target2_predicted1 + self.target1_predicted2)
 
     def get_precision_c1(self):
         return self.target1_predicted1 / (self.target1_predicted1 + self.target2_predicted1)
