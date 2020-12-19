@@ -3,7 +3,7 @@ from math import sqrt
 
 def euclidean_distance(row1, row2):
     distance = 0.0
-    for i in range(len(row1) - 1):
+    for i in range(len(row2) - 1):
         distance += (row1[i] - row2[i]) ** 2
     return sqrt(distance)
 
@@ -32,13 +32,8 @@ class KNN:
     def train(self, train_targets, train_vocab, train_tfIdf):
         self.vocab = train_vocab
 
-        validation_data = train_tfIdf[:int(len(train_tfIdf) * 0.1)]
-        validation_target = train_targets[:int(len(train_targets) * 0.1)]
-        train_data = train_tfIdf[int(len(train_tfIdf) * 0.1):]
-        train_target = train_targets[int(len(train_targets) * 0.1):]
-
         data = []
-        for i, doc in enumerate(train_data):
+        for i, doc in enumerate(train_tfIdf):
             x = []
             for term in train_vocab:
                 if term in doc.keys():
@@ -46,18 +41,25 @@ class KNN:
                 else:
                     x.append(0)
 
-            x.append(train_target[i])
+            x.append(train_targets[i])
             data.append(x)
 
-        self.data = data
+        validation_data = train_tfIdf[:int(len(train_tfIdf) * 0.04)]
+        validation_target = train_targets[:int(len(train_targets) * 0.04)]
+
+        train_data = data[int(len(data) * 0.04):int(len(data) * 0.4)]
+
+        self.data = train_data
 
         K_VALUES = [1, 5, 9]
 
         knn = KNN()
-        knn.data = data
+        knn.data = train_data
         knn.vocab = train_vocab
         arg_max = 0
         max_acc = 0
+
+        # print("done pre")
 
         for k in K_VALUES:
             knn.k = k
@@ -81,6 +83,7 @@ class KNN:
 
         neighbors = self.get_neighbors(x)
         output_values = [row[-1] for row in neighbors]
+        # print(output_values)
         prediction = max(set(output_values), key=output_values.count)
         return prediction
 
@@ -91,10 +94,11 @@ class KNN:
         self.fn = 0
 
         predicted = []
-        for doc_tfIdf in test_tfIdf:
+        print(len(test_targets))
+        for i, doc_tfIdf in enumerate(test_tfIdf):
             predicted.append(self.predict(doc_tfIdf))
-        for i, target in enumerate(test_targets):
-            if target == 1:
+            # print("predicted")
+            if test_targets[i] == 1:
                 if predicted[i] == 1:
                     self.tp += 1
                 else:
