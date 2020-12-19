@@ -65,12 +65,12 @@ class KNN:
             knn.k = k
             knn.test(validation_target, validation_data)
             acc = knn.get_accuracy()
-            print("knn k / acc", k, acc)
+            print("Accuracy for " + str(k) + "-NN: " + str(acc))
             if acc > max_acc:
                 max_acc = acc
                 arg_max = k
 
-        print("knn arg_max / max_acc", arg_max, max_acc)
+        print("Selected K for K-NN is " + str(arg_max) + "with accuracy of " + str(max_acc))
         self.k = arg_max
 
     def predict(self, doc_tfIdf):
@@ -94,7 +94,7 @@ class KNN:
         self.fn = 0
 
         predicted = []
-        print(len(test_targets))
+        # print(len(test_targets))
         for i, doc_tfIdf in enumerate(test_tfIdf):
             predicted.append(self.predict(doc_tfIdf))
             # print("predicted")
@@ -123,8 +123,6 @@ class KNN:
         R = self.get_recall()
         return (2 * P * R) / (P + R)
 
-
 # target_ = [1, -1]
 # vocab = ["good", "bad", "girl", "boy"]
 # tfIdf = [{"good": 4, "bad": 1, "girl": 2, "boy": 2}, {"good": 1, "bad": 4, "girl": 5, "boy": 2}]
-
