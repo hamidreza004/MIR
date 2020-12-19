@@ -47,7 +47,7 @@ class KNN:
 
         sample_size = int(len(train_tfIdf) * 0.3)
         sample_indices = sample(range(0, len(train_tfIdf)), sample_size)
-        validation_size = int(sample_size * 0.1)
+        validation_size = int(sample_size * 0.05)
 
         validation_data = []
         validation_target = []
@@ -75,7 +75,7 @@ class KNN:
             knn.test(validation_target, validation_data)
             acc = knn.get_accuracy()
             print("Accuracy for " + str(k) + "-NN: " + str(acc))
-            if acc > max_acc:
+            if acc >= max_acc:
                 max_acc = acc
                 arg_max = k
 
