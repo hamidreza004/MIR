@@ -61,6 +61,7 @@ class KNN:
 
         # print("done pre")
 
+        print("")
         for k in K_VALUES:
             knn.k = k
             knn.test(validation_target, validation_data)
@@ -70,7 +71,8 @@ class KNN:
                 max_acc = acc
                 arg_max = k
 
-        print("Selected K for K-NN is " + str(arg_max) + "with accuracy of " + str(max_acc))
+        print("Selected K for K-NN is " + str(arg_max) + " with accuracy of " + str(max_acc))
+        print("")
         self.k = arg_max
 
     def predict(self, doc_tfIdf):

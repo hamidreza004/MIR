@@ -31,16 +31,18 @@ class SVM:
         arg_max = 0
         max_acc = 0
 
+        print("")
         for c in C_VALUES:
             svm.train_specified(train_target, train_data, C=c)
             svm.test(validation_target, validation_data)
             acc = svm.get_accuracy()
-            print("svm C / acc", c, acc)
+            print("Accuracy for SVM with C = " + str(c) + " is " + str(acc))
             if acc > max_acc:
                 max_acc = acc
                 arg_max = c
 
-        print("svm arg_max / max_acc", arg_max, max_acc)
+        print("Selected C for SVN is " + str(arg_max) + " with accuracy of " + str(max_acc))
+        print("")
         self.train_specified(train_target, train_data, C=arg_max)
 
     def predict(self, doc_tfIdf):
