@@ -6,10 +6,10 @@ class SVM:
     def __init__(self):
         self.clf = None
         self.v = None
-        self.tp = 0
-        self.tn = 0
-        self.fp = 0
-        self.fn = 0
+        self.target1_predicted1 = 0
+        self.target2_predicted2 = 0
+        self.target2_predicted1 = 0
+        self.target1_predicted2 = 0
 
     def train_specified(self, train_targets, train_tfIdf, C=1.0):
         v = DictVectorizer(sparse=False)
@@ -41,7 +41,7 @@ class SVM:
                 max_acc = acc
                 arg_max = c
 
-        print("Selected C for SVN is " + str(arg_max) + " with accuracy of " + str(max_acc))
+        print("Selected C for SVM is " + str(arg_max) + " with accuracy of " + str(max_acc))
         print("")
         self.train_specified(train_target, train_data, C=arg_max)
 
@@ -55,10 +55,10 @@ class SVM:
         return int(self.clf.predict([x])[0])
 
     def test(self, test_targets, test_tfIdf):
-        self.tp = 0
-        self.tn = 0
-        self.fp = 0
-        self.fn = 0
+        self.target1_predicted1 = 0
+        self.target2_predicted2 = 0
+        self.target2_predicted1 = 0
+        self.target1_predicted2 = 0
 
         predicted = []
         for doc_tfIdf in test_tfIdf:
@@ -66,27 +66,39 @@ class SVM:
         for i, target in enumerate(test_targets):
             if target == 1:
                 if predicted[i] == 1:
-                    self.tp += 1
+                    self.target1_predicted1 += 1
                 else:
-                    self.fn += 1
+                    self.target1_predicted2 += 1
             else:
                 if predicted[i] == 1:
-                    self.fp += 1
+                    self.target2_predicted1 += 1
                 else:
-                    self.tn += 1
+                    self.target2_predicted2 += 1
 
     def get_accuracy(self):
-        return (self.tp + self.tn) / (self.tp + self.tn + self.fp + self.fn)
+        return (self.target1_predicted1 + self.target2_predicted2) / (
+                    self.target1_predicted1 + self.target2_predicted2 + self.target2_predicted1 + self.target1_predicted2)
 
-    def get_precision(self):
-        return self.tp / (self.tp + self.fp)
+    def get_precision_c1(self):
+        return self.target1_predicted1 / (self.target1_predicted1 + self.target2_predicted1)
 
-    def get_recall(self):
-        return self.tp / (self.tp + self.fn)
+    def get_precision_c2(self):
+        return self.target2_predicted2 / (self.target2_predicted2 + self.target1_predicted2)
 
-    def get_F1(self):
-        P = self.get_precision()
-        R = self.get_recall()
+    def get_recall_c1(self):
+        return self.target1_predicted1 / (self.target1_predicted1 + self.target1_predicted2)
+
+    def get_recall_c2(self):
+        return self.target2_predicted2 / (self.target2_predicted2 + self.target2_predicted1)
+
+    def get_F1_c1(self):
+        P = self.get_precision_c1()
+        R = self.get_recall_c1()
+        return (2 * P * R) / (P + R)
+
+    def get_F1_c2(self):
+        P = self.get_precision_c2()
+        R = self.get_recall_c2()
         return (2 * P * R) / (P + R)
 
 #

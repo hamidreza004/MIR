@@ -13,10 +13,10 @@ class KNN:
         self.vocab = []
         self.data = []
         self.k = 1
-        self.tp = 0
-        self.tn = 0
-        self.fp = 0
-        self.fn = 0
+        self.target1_predicted1 = 0
+        self.target2_predicted2 = 0
+        self.target2_predicted1 = 0
+        self.target1_predicted2 = 0
 
     def get_neighbors(self, test_row):
         distances = []
@@ -44,8 +44,8 @@ class KNN:
             x.append(train_targets[i])
             data.append(x)
 
-        validation_data = train_tfIdf[:int(len(train_tfIdf) * 0.04)]
-        validation_target = train_targets[:int(len(train_targets) * 0.04)]
+        validation_data = train_tfIdf[:int(len(train_tfIdf) * 0.02)]
+        validation_target = train_targets[:int(len(train_targets) * 0.02)]
 
         train_data = data[int(len(data) * 0.04):int(len(data) * 0.4)]
 
@@ -90,10 +90,10 @@ class KNN:
         return prediction
 
     def test(self, test_targets, test_tfIdf):
-        self.tp = 0
-        self.tn = 0
-        self.fp = 0
-        self.fn = 0
+        self.target1_predicted1 = 0
+        self.target2_predicted2 = 0
+        self.target2_predicted1 = 0
+        self.target1_predicted2 = 0
 
         predicted = []
         # print(len(test_targets))
@@ -102,27 +102,38 @@ class KNN:
             # print("predicted")
             if test_targets[i] == 1:
                 if predicted[i] == 1:
-                    self.tp += 1
+                    self.target1_predicted1 += 1
                 else:
-                    self.fn += 1
+                    self.target1_predicted2 += 1
             else:
                 if predicted[i] == 1:
-                    self.fp += 1
+                    self.target2_predicted1 += 1
                 else:
-                    self.tn += 1
+                    self.target2_predicted2 += 1
 
     def get_accuracy(self):
-        return (self.tp + self.tn) / (self.tp + self.tn + self.fp + self.fn)
+        return (self.target1_predicted1 + self.target2_predicted2) / (self.target1_predicted1 + self.target2_predicted2 + self.target2_predicted1 + self.target1_predicted2)
 
-    def get_precision(self):
-        return self.tp / (self.tp + self.fp)
+    def get_precision_c1(self):
+        return self.target1_predicted1 / (self.target1_predicted1 + self.target2_predicted1)
 
-    def get_recall(self):
-        return self.tp / (self.tp + self.fn)
+    def get_precision_c2(self):
+        return self.target2_predicted2 / (self.target2_predicted2 + self.target1_predicted2)
 
-    def get_F1(self):
-        P = self.get_precision()
-        R = self.get_recall()
+    def get_recall_c1(self):
+        return self.target1_predicted1 / (self.target1_predicted1 + self.target1_predicted2)
+
+    def get_recall_c2(self):
+        return self.target2_predicted2 / (self.target2_predicted2 + self.target2_predicted1)
+
+    def get_F1_c1(self):
+        P = self.get_precision_c1()
+        R = self.get_recall_c1()
+        return (2 * P * R) / (P + R)
+
+    def get_F1_c2(self):
+        P = self.get_precision_c2()
+        R = self.get_recall_c2()
         return (2 * P * R) / (P + R)
 
 # target_ = [1, -1]
