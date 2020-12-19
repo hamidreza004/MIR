@@ -565,10 +565,13 @@ def configure_classification_section(win):
         listbox = Listbox(evaluate_window)
         for classifier in [naive_bayes, knn, svm, random_forest]:
             listbox.insert(END, classifier.__class__.__name__ + ":")
-            listbox.insert(END, "Accuracy: {} ".format(classifier.get_accuracy()))
-            listbox.insert(END, "F1 : {}".format(classifier.get_F1()))
-            listbox.insert(END, "Precision : {}".format(classifier.get_precision()))
-            listbox.insert(END, "Recall : {}".format(classifier.get_recall()))
+            listbox.insert(END, "Accuracy: {} ".format(round(classifier.get_accuracy(), 4)))
+            listbox.insert(END, "F1_C1 : {}".format(round(classifier.get_F1_c1(), 4)))
+            listbox.insert(END, "Precision_C1 : {}".format(round(classifier.get_precision_c1(), 4)))
+            listbox.insert(END, "Recall_C1 : {}".format(round(classifier.get_recall_c2(), 4)))
+            listbox.insert(END, "F1_C2 : {}".format(round(classifier.get_F1_c2(), 4)))
+            listbox.insert(END, "Precision_C2 : {}".format(round(classifier.get_precision_c2(), 4)))
+            listbox.insert(END, "Recall_C2 : {}".format(round(classifier.get_recall_c2(), 4)))
             listbox.insert(END, "")
 
         listbox.pack(side=LEFT, fill=BOTH, expand=True)
