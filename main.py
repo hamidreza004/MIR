@@ -111,7 +111,7 @@ def configure_prepare_section(win):
         df = pd.read_csv(filename)
         df = df[['description', 'title']]
         df, stop_words = eng.prepare_text(df)
-        index.add_multiple_documents(df, random_forest)
+        index.add_multiple_documents(df, svm)
 
         stopwords_window = Toplevel(win)
         stopwords_window.title("Stopwords found (TOP {}%)".format(eng.stop_word_ratio * 100))
@@ -155,7 +155,7 @@ def configure_prepare_section(win):
         df = XML_to_dataframe(filename)
         df = df[['description', 'title']]
         df, stop_words = per.prepare_text(df)
-        index.add_multiple_documents(df, random_forest)
+        index.add_multiple_documents(df, svm)
 
         stopwords_window = Toplevel(win)
         stopwords_window.title("Stopwords found (TOP {}%)".format(per.stop_word_ratio * 100))
@@ -208,7 +208,7 @@ def configure_change_index_section(win):
             lang = per
         id = index.add_single_document(stopwords_core.remove_stop_words(lang.clean_raw(desc), stop_words),
                                        stopwords_core.remove_stop_words(lang.clean_raw(title), stop_words),
-                                       random_forest)
+                                       svm)
         tk.messagebox.showinfo(title="Info", message="Your enter document added with ID {}".format(id))
 
     btn_add_doc = Button(win, text="Add single document", command=add_document_clicked)
