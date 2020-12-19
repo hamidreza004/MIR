@@ -45,7 +45,7 @@ class KNN:
             x.append(train_targets[i])
             data.append(x)
 
-        sample_size = int(len(train_tfIdf) * 0.5)
+        sample_size = int(len(train_tfIdf) * 0.3)
         sample_indices = sample(range(0, len(train_tfIdf)), sample_size)
         validation_size = int(sample_size * 0.1)
 
