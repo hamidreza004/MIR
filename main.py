@@ -6,7 +6,7 @@ import preprocess.preprocess_per as per
 import preprocess.stopwords as stopwords_core
 import tkinter as tk
 import pandas as pd
-from helper import XML_to_dataframe
+from helper import XML_to_dataframe, JSON_to_dataframe
 import index.core as index
 import index.spell_checker as spell_checker
 import search.LNC_LTC as LNC_LTC
@@ -146,7 +146,7 @@ def configure_prepare_section(win):
         stopwords_window.mainloop()
 
     btn_CSV = Button(win, text="Prepare CSV documents", command=prepare_CSV_clicked)
-    btn_CSV.grid(column=1, row=0, sticky=W + E + N + S, columnspan=2)
+    btn_CSV.grid(column=1, row=0, sticky=W + E + N + S, columnspan=1)
 
     def prepare_XML_clicked():
         global stop_words
@@ -190,7 +190,53 @@ def configure_prepare_section(win):
         stopwords_window.mainloop()
 
     btn_XML = Button(win, text="Prepare XML documents", command=prepare_XML_clicked)
+    btn_XML.grid(column=2, row=0, sticky=W + E + N + S, columnspan=1)
+
+    def prepare_JSON_clicked():
+        global stop_words
+        print("Loading...")
+        filename = filedialog.askopenfilename()
+        df = JSON_to_dataframe(filename)
+        print(df)
+        # df = df[['description', 'title']]
+        # df, stop_words = per.prepare_text(df)
+        # index.add_multiple_documents(df, svm)
+        #
+        # stopwords_window = Toplevel(win)
+        # stopwords_window.title("Stopwords found (TOP {}%)".format(per.stop_word_ratio * 100))
+        # stopwords_window.geometry("800x1200")
+        # add_table(stopwords_window, wide_table(stop_words, 6))
+        #
+        # parsed_document_window = Toplevel(win)
+        # parsed_document_window.title("Parsed Document")
+        # parsed_document_window.geometry("800x800")
+        # scrollbar = Scrollbar(parsed_document_window)
+        # scrollbar.pack(side=RIGHT, fill=Y)
+        #
+        # listbox1 = Listbox(parsed_document_window, yscrollcommand=scrollbar.set)
+        # listbox2 = Listbox(parsed_document_window, yscrollcommand=scrollbar.set)
+        # listbox3 = Listbox(parsed_document_window, yscrollcommand=scrollbar.set)
+        #
+        # listbox1.insert(END, 'Index')
+        # listbox2.insert(END, 'Title')
+        # listbox3.insert(END, 'Description')
+        #
+        # for i, row in df.iterrows():
+        #     listbox1.insert(END, i + 1)
+        #     listbox2.insert(END, ', '.join(row['title']))
+        #     listbox3.insert(END, ', '.join(row['description']))
+        #
+        # listbox1.pack(side=LEFT, fill=BOTH, expand=TRUE)
+        # listbox2.pack(side=LEFT, fill=BOTH, expand=TRUE)
+        # listbox3.pack(side=LEFT, fill=BOTH, expand=TRUE)
+        # scrollbar.config(command=multiple(listbox1.yview, listbox2.yview, listbox3.yview))
+        #
+        # parsed_document_window.mainloop()
+        # stopwords_window.mainloop()
+
+    btn_XML = Button(win, text="Prepare JSON documents", command=prepare_JSON_clicked)
     btn_XML.grid(column=3, row=0, sticky=W + E + N + S, columnspan=1)
+
 
 
 def configure_change_index_section(win):
