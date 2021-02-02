@@ -18,6 +18,7 @@ from classifiers.random_forest import RandomForest
 from classifiers.svm import SVM
 from classifiers.naive_bayes import NaiveBayes
 from classifiers.knn import KNN
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 def multiple(*func_list):
@@ -101,6 +102,19 @@ def configure_size_window(win):
 
 
 stop_words = []
+
+
+def convert_to_vector_space(df):
+    docs = []
+    for _, row in df.iterrows():
+        docs.append(row['title'])
+    vectorizer = TfidfVectorizer()
+    vectors = vectorizer.fit_transform(docs)
+    feature_names = vectorizer.get_feature_names()
+    dense = vectors.todense()
+    dense_list = dense.tolist()
+    df = pd.DataFrame(dense_list, columns=feature_names)
+    print(df)
 
 
 def configure_prepare_section(win):
@@ -233,7 +247,7 @@ def configure_prepare_section(win):
         listbox4.pack(side=LEFT, fill=BOTH, expand=TRUE)
         scrollbar.config(
             command=multiple(listbox0.yview, listbox1.yview, listbox2.yview, listbox3.yview, listbox4.yview))
-
+        convert_to_vector_space(df)
         parsed_document_window.mainloop()
         stopwords_window.mainloop()
 
