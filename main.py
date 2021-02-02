@@ -102,24 +102,31 @@ def configure_size_window(win):
 
 
 stop_words = []
+id_to_link = []
+TF_IDF_DFs = {}
+word2vecs = {}
 
 
 def convert_to_vector_space(df):
-    docs = []
-    for _, row in df.iterrows():
-        docs.append(row['title'])
-    vectorizer = TfidfVectorizer()
-    vectors = vectorizer.fit_transform(docs)
-    feature_names = vectorizer.get_feature_names()
-    dense = vectors.todense()
-    dense_list = dense.tolist()
-    df = pd.DataFrame(dense_list, columns=feature_names)
-    print(df)
+    global TF_IDF_DFs
+    global word2vecs
+    for col_name in ['title', 'summary', 'tags']:
+        docs = []
+        for _, row in df.iterrows():
+            docs.append(' '.join(row[col_name]))
+        vectorizer = TfidfVectorizer()
+        vectors = vectorizer.fit_transform(docs)
+        feature_names = vectorizer.get_feature_names()
+        dense = vectors.todense()
+        dense_list = dense.tolist()
+        TF_IDF_DFs[col_name] = pd.DataFrame(dense_list, columns=feature_names)
+    print(TF_IDF_DFs)
 
 
 def configure_prepare_section(win):
     def prepare_CSV_clicked():
         global stop_words
+        global id_to_link
         print("Loading...")
         filename = filedialog.askopenfilename()
         df = pd.read_csv(filename)
@@ -150,6 +157,7 @@ def configure_prepare_section(win):
             listbox1.insert(END, i + 1)
             listbox2.insert(END, ', '.join(row['title']))
             listbox3.insert(END, ', '.join(row['description']))
+            id_to_link.append(row['link'])
 
         listbox1.pack(side=LEFT, fill=BOTH, expand=TRUE)
         listbox2.pack(side=LEFT, fill=BOTH, expand=TRUE)
