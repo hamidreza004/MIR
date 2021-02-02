@@ -41,3 +41,29 @@ def prepare_text(df):
         row['title'] = remove_stop_words(row['title'], stop_words)
 
     return df, stop_words
+
+
+def prepare_json_text(df):
+    df = df[['title', 'summary', 'link', 'tags']]
+
+    global stop_words
+    all_tokens_dic = {}
+    for index, row in df.iterrows():
+        row['title'] = clean_raw(row['title'])
+        row['summary'] = clean_raw(row['summary'])
+        row['tags'] = clean_raw(row['tags'])
+        for col_name in ['title', 'summary', 'tags']:
+            for token in row[col_name]:
+                if not token in all_tokens_dic:
+                    all_tokens_dic[token] = 1
+                else:
+                    all_tokens_dic[token] += 1
+
+    stop_words = find_stop_words(all_tokens_dic, 0.003)
+
+    for index, row in df.iterrows():
+        row['title'] = remove_stop_words(row['title'], stop_words)
+        row['summary'] = remove_stop_words(row['summary'], stop_words)
+        row['tags'] = remove_stop_words(row['tags'], stop_words)
+
+    return df, stop_words
