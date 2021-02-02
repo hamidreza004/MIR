@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 import json
 
+
 def XML_to_dataframe(filename):
     df = pd.DataFrame(columns=['description', 'title'])
     tree = ET.parse(filename)
@@ -29,6 +30,6 @@ def JSON_to_dataframe(filename):
     data = json.load(file)
     pos = 0
     for row in data:
-        print(row['title'], row['summary'], row['link'], row['tags'])
+        df.loc[pos] = [row['title'], row['summary'], row['link'], row['tags']]
         pos += 1
     return df
