@@ -30,6 +30,6 @@ def JSON_to_dataframe(filename):
     data = json.load(file)
     pos = 0
     for row in data:
-        df.loc[pos] = [row['title'], row['summary'], row['link'], row['tags'][0]]
+        df.loc[pos] = [row['title'] + row['summary'], row['summary'], row['link'], row['tags'][0]]
         pos += 1
     return df
