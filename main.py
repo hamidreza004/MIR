@@ -129,13 +129,10 @@ def convert_to_vector_space(df):
         vocab = list(model.wv.vocab.keys())
         tmp_df = pd.DataFrame(columns=vocab)
         for i, row in df.iterrows():
-            trained = model.infer_vector(row[col_name])
-            new_row = {}
-            pos = 0
-            for term in trained:
-                new_row[vocab[pos]] = term
-                pos += 1
-            tmp_df.append(new_row, ignore_index=True)
+            trained = list(model.infer_vector(row[col_name]))
+            while len(trained) < len(vocab):
+                trained.append(0)
+            tmp_df.loc[i] = list(trained)
         word2vecs[col_name] = tmp_df
     print(TF_IDF_DFs)
     print(word2vecs)
