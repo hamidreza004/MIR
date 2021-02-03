@@ -666,6 +666,13 @@ def configure_classification_section(win):
     btn_test = Button(win, text="Test Models", command=test_models)
     btn_test.grid(column=2, row=9, sticky=W + E + N + S, columnspan=1)
 
+    def classify_docs():
+        # TODO: put armin function here then pass TF_IDF_DFs and word2vecs
+        print("classify mishe ishalla")
+
+    btn_classify = Button(win, text="Classify JSON documents", command=classify_docs)
+    btn_classify.grid(column=3, row=9, sticky=W + E + N + S, columnspan=1)
+
 
 def initial_window(win):
     configure_size_window(win)
