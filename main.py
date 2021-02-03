@@ -19,6 +19,7 @@ from classifiers.svm import SVM
 from classifiers.naive_bayes import NaiveBayes
 from classifiers.knn import KNN
 from sklearn.feature_extraction.text import TfidfVectorizer
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 
 
 def multiple(*func_list):
@@ -120,7 +121,24 @@ def convert_to_vector_space(df):
         dense = vectors.todense()
         dense_list = dense.tolist()
         TF_IDF_DFs[col_name] = pd.DataFrame(dense_list, columns=feature_names)
+
+        model = Doc2Vec(min_count=1, workers=8, epochs=20, vector_size=len(feature_names))
+        card_docs = [TaggedDocument(row[col_name], [i]) for i, row in df.iterrows()]
+        model.build_vocab(card_docs)
+        model.train(card_docs, total_examples=model.corpus_count, epochs=model.epochs)
+        vocab = list(model.wv.vocab.keys())
+        tmp_df = pd.DataFrame(columns=vocab)
+        for i, row in df.iterrows():
+            trained = model.infer_vector(row[col_name])
+            new_row = {}
+            pos = 0
+            for term in trained:
+                new_row[vocab[pos]] = term
+                pos += 1
+            tmp_df.append(new_row, ignore_index=True)
+        word2vecs[col_name] = tmp_df
     print(TF_IDF_DFs)
+    print(word2vecs)
 
 
 def configure_prepare_section(win):
@@ -259,7 +277,7 @@ def configure_prepare_section(win):
         parsed_document_window.mainloop()
         stopwords_window.mainloop()
 
-    btn_JSON = Button(win, text="Classify JSON documents", command=prepare_JSON_clicked)
+    btn_JSON = Button(win, text="Prepare JSON documents", command=prepare_JSON_clicked)
     btn_JSON.grid(column=3, row=0, sticky=W + E + N + S, columnspan=1)
 
 
