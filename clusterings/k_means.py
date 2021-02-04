@@ -1,21 +1,37 @@
 from sklearn.cluster import KMeans
 from sklearn import metrics
+from sklearn.metrics.cluster import contingency_matrix
 import numpy as np
 
 
-def k_means(tf_idf, w2v):
-    print(tf_idf['title'])
+def k_means(vector, tags, links, random_state, n_clusters):
+    X = np.array(vector)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10, max_iter=300, tol=1e-4).fit(X)
+    labels_true = tags
+    labels_pred = kmeans.labels_
 
-# X = np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0], [5, 5], [12, 3], [2, 10], [5, 12]])
-# kmeans = KMeans(n_clusters=3, n_init=10, max_iter=300, tol=1e-4).fit(X)
-# print(kmeans.labels_)
-# print(kmeans.predict(X))
-# # print(kmeans.cluster_centers_)
-# print(kmeans.inertia_)
-#
-# labels_true = kmeans.labels_
-# labels_pred = kmeans.predict(X)
-#
-# print(metrics.cluster.adjusted_rand_score(labels_true, labels_pred))
-# print(metrics.cluster.adjusted_mutual_info_score(labels_true, labels_pred))
-# print(metrics.cluster.normalized_mutual_info_score(labels_true, labels_pred))
+    # print("--------------------------------------------------------------------------")
+    # print("purity_score:", purity_score(labels_true, labels_pred))
+    # print("adjusted_mutual_info:", round((metrics.cluster.adjusted_mutual_info_score(labels_true, labels_pred)), 6))
+    # print("adjusted_rand_index:", round(metrics.cluster.adjusted_rand_score(labels_true, labels_pred), 6))
+    # print("--------------------------------------------------------------------------")
+
+    return round((metrics.cluster.adjusted_mutual_info_score(labels_true, labels_pred)), 6), random_state
+
+
+def get_best_randomeness(vector, tags, links):
+    best_score = 0
+    best_random = 0
+    for i in range(100):
+        score, random = k_means(vector, tags, links, i*53, 5)
+        if score > best_score:
+            best_score = score
+            best_random = random
+        print(i)
+
+    print(best_score, best_random)
+
+
+def purity_score(labels_true, labels_pred):
+    matrix = contingency_matrix(labels_true, labels_pred)
+    return np.sum(np.amax(matrix, axis=0)) / np.sum(matrix)

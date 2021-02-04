@@ -21,6 +21,7 @@ from classifiers.knn import KNN
 from sklearn.feature_extraction.text import TfidfVectorizer
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import json
+from clusterings.k_means import k_means, get_best_randomeness
 
 
 def multiple(*func_list):
@@ -125,7 +126,7 @@ def convert_to_vector_space(df):
     dense_list = dense.tolist()
     TF_IDF_DFs = pd.DataFrame(dense_list, columns=feature_names).values.tolist()
 
-    model = Doc2Vec(min_count=1, workers=8, epochs=20, vector_size=100)
+    model = Doc2Vec(min_count=2, workers=8, epochs=40, vector_size=64)
     card_docs = [TaggedDocument(row[col_name], [i]) for i, row in df.iterrows()]
     model.build_vocab(card_docs)
     model.train(card_docs, total_examples=model.corpus_count, epochs=model.epochs)
@@ -139,8 +140,6 @@ def convert_to_vector_space(df):
     for i in range(len(word2vecs)):
         for j in range(len(word2vecs[0])):
             word2vecs[i][j] = str(word2vecs[i][j])
-    print(len(word2vecs), len(word2vecs[0]))
-    print(len(TF_IDF_DFs), len(TF_IDF_DFs[0]))
 
 
 def configure_prepare_section(win):
@@ -709,12 +708,9 @@ def configure_classification_section(win):
         for i in range(len(word2vecs)):
             for j in range(len(word2vecs[0])):
                 word2vecs[i][j] = float(word2vecs[i][j])
-        print(len(word2vecs), len(word2vecs[0]))
-        print(len(TF_IDF_DFs), len(TF_IDF_DFs[0]))
-        print(max(tags), len(tags))
-        print(len(id_to_link))
-        print(id_to_link)
-        # TODO: put armin function here then pass TF_IDF_DFs and word2vecs
+        get_best_randomeness(word2vecs, tags, id_to_link)
+        # k_means(TF_IDF_DFs, tags, id_to_link, 452, 5)
+        # k_means(word2vecs, tags, id_to_link, 666, 5)
         print("clustering compeleted.")
 
     btn_classify = Button(win, text="Cluster JSON Documents", command=cluster_docs)
