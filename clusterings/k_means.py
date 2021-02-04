@@ -22,8 +22,8 @@ def k_means(vector, tags, links, random_state, n_clusters):
 def get_best_randomeness(vector, tags, links):
     best_score = 0
     best_random = 0
-    for i in range(100):
-        score, random = k_means(vector, tags, links, i*53, 5)
+    for i in range(40):
+        score, random = k_means(vector, tags, links, i*53, 14)
         if score > best_score:
             best_score = score
             best_random = random

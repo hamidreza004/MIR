@@ -126,7 +126,7 @@ def convert_to_vector_space(df):
     dense_list = dense.tolist()
     TF_IDF_DFs = pd.DataFrame(dense_list, columns=feature_names).values.tolist()
 
-    model = Doc2Vec(min_count=2, workers=8, epochs=40, vector_size=64)
+    model = Doc2Vec(min_count=2, workers=8, epochs=32, vector_size=120)
     card_docs = [TaggedDocument(row[col_name], [i]) for i, row in df.iterrows()]
     model.build_vocab(card_docs)
     model.train(card_docs, total_examples=model.corpus_count, epochs=model.epochs)
@@ -708,9 +708,11 @@ def configure_classification_section(win):
         for i in range(len(word2vecs)):
             for j in range(len(word2vecs[0])):
                 word2vecs[i][j] = float(word2vecs[i][j])
+
+        get_best_randomeness(TF_IDF_DFs, tags, id_to_link)
         get_best_randomeness(word2vecs, tags, id_to_link)
         # k_means(TF_IDF_DFs, tags, id_to_link, 452, 5)
-        # k_means(word2vecs, tags, id_to_link, 666, 5)
+        # k_means(word2vecs, tags, id_to_link, 3861, 5)
         print("clustering compeleted.")
 
     btn_classify = Button(win, text="Cluster JSON Documents", command=cluster_docs)
