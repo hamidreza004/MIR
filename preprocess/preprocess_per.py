@@ -51,8 +51,7 @@ def prepare_json_text(df):
     for index, row in df.iterrows():
         row['title'] = clean_raw(row['title'])
         row['summary'] = clean_raw(row['summary'])
-        row['tags'] = clean_raw(row['tags'])
-        for col_name in ['title', 'summary', 'tags']:
+        for col_name in ['title', 'summary']:
             for token in row[col_name]:
                 if not token in all_tokens_dic:
                     all_tokens_dic[token] = 1

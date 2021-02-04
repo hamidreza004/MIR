@@ -279,7 +279,7 @@ def configure_prepare_section(win):
         pos = 0
         unique = {}
         for i, row in df.iterrows():
-            category = row['tags'][0]
+            category = row['tags'].split('>')[0]
             if category not in unique.keys():
                 unique[category] = pos
                 pos += 1
@@ -711,7 +711,8 @@ def configure_classification_section(win):
                 word2vecs[i][j] = float(word2vecs[i][j])
         print(len(word2vecs), len(word2vecs[0]))
         print(len(TF_IDF_DFs), len(TF_IDF_DFs[0]))
-        print(max(tags))
+        print(max(tags), len(tags))
+        print(len(id_to_link))
         print(id_to_link)
         # TODO: put armin function here then pass TF_IDF_DFs and word2vecs
         print("classify mishe ishalla")
