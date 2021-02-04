@@ -64,6 +64,5 @@ def prepare_json_text(df):
     for index, row in df.iterrows():
         row['title'] = remove_stop_words(row['title'], stop_words)
         row['summary'] = remove_stop_words(row['summary'], stop_words)
-        row['tags'] = remove_stop_words(row['tags'], stop_words)
 
     return df, stop_words

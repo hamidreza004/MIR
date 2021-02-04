@@ -103,37 +103,39 @@ def configure_size_window(win):
 
 
 stop_words = []
+
 id_to_link = []
-TF_IDF_DFs = {}
-word2vecs = {}
+tags = []
+TF_IDF_DFs = None
+word2vecs = None
 
 
 def convert_to_vector_space(df):
     global TF_IDF_DFs
     global word2vecs
-    for col_name in ['title', 'summary', 'tags']:
-        docs = []
-        for _, row in df.iterrows():
-            docs.append(' '.join(row[col_name]))
-        vectorizer = TfidfVectorizer()
-        vectors = vectorizer.fit_transform(docs)
-        feature_names = vectorizer.get_feature_names()
-        dense = vectors.todense()
-        dense_list = dense.tolist()
-        TF_IDF_DFs[col_name] = pd.DataFrame(dense_list, columns=feature_names)
+    docs = []
+    col_name = 'title'
+    for _, row in df.iterrows():
+        docs.append(' '.join(row[col_name]))
+    vectorizer = TfidfVectorizer()
+    vectors = vectorizer.fit_transform(docs)
+    feature_names = vectorizer.get_feature_names()
+    dense = vectors.todense()
+    dense_list = dense.tolist()
+    TF_IDF_DFs = pd.DataFrame(dense_list, columns=feature_names)
 
-        model = Doc2Vec(min_count=1, workers=8, epochs=20, vector_size=len(feature_names))
-        card_docs = [TaggedDocument(row[col_name], [i]) for i, row in df.iterrows()]
-        model.build_vocab(card_docs)
-        model.train(card_docs, total_examples=model.corpus_count, epochs=model.epochs)
-        vocab = list(model.wv.vocab.keys())
-        tmp_df = pd.DataFrame(columns=vocab)
-        for i, row in df.iterrows():
-            trained = list(model.infer_vector(row[col_name]))
-            while len(trained) < len(vocab):
-                trained.append(0)
-            tmp_df.loc[i] = list(trained)
-        word2vecs[col_name] = tmp_df
+    model = Doc2Vec(min_count=1, workers=8, epochs=20, vector_size=len(feature_names))
+    card_docs = [TaggedDocument(row[col_name], [i]) for i, row in df.iterrows()]
+    model.build_vocab(card_docs)
+    model.train(card_docs, total_examples=model.corpus_count, epochs=model.epochs)
+    vocab = list(model.wv.vocab.keys())
+    tmp_df = pd.DataFrame(columns=vocab)
+    for i, row in df.iterrows():
+        trained = list(model.infer_vector(row[col_name]))
+        while len(trained) < len(vocab):
+            trained.append(0)
+        tmp_df.loc[i] = list(trained)
+    word2vecs = tmp_df
     print(TF_IDF_DFs)
     print(word2vecs)
 
@@ -231,6 +233,7 @@ def configure_prepare_section(win):
 
     def prepare_JSON_clicked():
         global stop_words
+        global tags
         print("Loading...")
         filename = filedialog.askopenfilename()
         df = JSON_to_dataframe(filename)
@@ -270,6 +273,14 @@ def configure_prepare_section(win):
         listbox4.pack(side=LEFT, fill=BOTH, expand=TRUE)
         scrollbar.config(
             command=multiple(listbox0.yview, listbox1.yview, listbox2.yview, listbox3.yview, listbox4.yview))
+        pos = 0
+        unique = {}
+        for i, row in df.iterrows():
+            category = row['tags'][0]
+            if category not in unique.keys():
+                unique[category] = pos
+                pos += 1
+            tags.append(unique[category])
         convert_to_vector_space(df)
         parsed_document_window.mainloop()
         stopwords_window.mainloop()
