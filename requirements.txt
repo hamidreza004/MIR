@@ -8,3 +8,4 @@ tk==0.1.0
 scikit-learn==0.23.2
 gensim==3.8.3
 selenium==3.141.0
+networkx==2.5
