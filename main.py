@@ -142,6 +142,36 @@ def convert_to_vector_space(df):
             word2vecs[i][j] = str(word2vecs[i][j])
 
 
+def JSON_to_classification_arrays(filename):
+    global id_to_link
+    global tags
+    global TF_IDF_DFs
+    global word2vecs
+    global stop_words
+    stop_words = []
+
+    id_to_link = []
+    tags = []
+    TF_IDF_DFs = None
+    word2vecs = None
+
+    df = JSON_to_dataframe(filename)
+    df = df[['title', 'summary', 'link', 'tags']]
+    df, stop_words = per.prepare_json_text(df)
+    for i, row in df.iterrows():
+        id_to_link.append(row['link'])
+    pos = 0
+    unique = {}
+    for i, row in df.iterrows():
+        category = row['tags'].split('>')[0]
+        if category not in unique.keys():
+            unique[category] = pos
+            pos += 1
+        tags.append(unique[category])
+    convert_to_vector_space(df)
+    return id_to_link, tags, TF_IDF_DFs, word2vecs, df
+
+
 def configure_prepare_section(win):
     def prepare_CSV_clicked():
         global stop_words
@@ -235,11 +265,21 @@ def configure_prepare_section(win):
     def prepare_JSON_clicked():
         global stop_words
         global tags
+        global id_to_link
+        global TF_IDF_DFs
+        global word2vecs
         print("Loading...")
         filename = filedialog.askopenfilename()
-        df = JSON_to_dataframe(filename)
-        df = df[['title', 'summary', 'link', 'tags']]
-        df, stop_words = per.prepare_json_text(df)
+        id_to_link, tags, TF_IDF_DFs, word2vecs, df = JSON_to_classification_arrays(filename)
+        with open('IR_files/tags.txt', 'w') as f:
+            json.dump(tags, f)
+        with open('IR_files/word2vecs.txt', 'w') as f:
+            json.dump(word2vecs, f)
+        with open('IR_files/TF_IDF_DFs.txt', 'w') as f:
+            json.dump(TF_IDF_DFs, f)
+        with open('IR_files/id_to_link.txt', 'w') as f:
+            json.dump(id_to_link, f)
+
         stopwords_window = Toplevel(win)
         stopwords_window.title("Stopwords found (TOP {}%)".format(per.stop_word_ratio * 100))
         stopwords_window.geometry("800x1200")
@@ -266,7 +306,6 @@ def configure_prepare_section(win):
             listbox2.insert(END, ', '.join(row['summary']))
             listbox3.insert(END, row['link'])
             listbox4.insert(END, ', '.join(row['tags']))
-            id_to_link.append(row['link'])
 
         listbox0.pack(side=LEFT, fill=BOTH, expand=TRUE)
         listbox1.pack(side=LEFT, fill=BOTH, expand=TRUE)
@@ -275,24 +314,6 @@ def configure_prepare_section(win):
         listbox4.pack(side=LEFT, fill=BOTH, expand=TRUE)
         scrollbar.config(
             command=multiple(listbox0.yview, listbox1.yview, listbox2.yview, listbox3.yview, listbox4.yview))
-        pos = 0
-        unique = {}
-        for i, row in df.iterrows():
-            category = row['tags'].split('>')[0]
-            if category not in unique.keys():
-                unique[category] = pos
-                pos += 1
-            tags.append(unique[category])
-        convert_to_vector_space(df)
-
-        with open('IR_files/tags.txt', 'w') as f:
-            json.dump(tags, f)
-        with open('IR_files/word2vecs.txt', 'w') as f:
-            json.dump(word2vecs, f)
-        with open('IR_files/TF_IDF_DFs.txt', 'w') as f:
-            json.dump(TF_IDF_DFs, f)
-        with open('IR_files/id_to_link.txt', 'w') as f:
-            json.dump(id_to_link, f)
 
         parsed_document_window.mainloop()
         stopwords_window.mainloop()
