@@ -715,7 +715,7 @@ def configure_classification_section(win):
         print(len(id_to_link))
         print(id_to_link)
         # TODO: put armin function here then pass TF_IDF_DFs and word2vecs
-        print("classify mishe ishalla")
+        print("clustering compeleted.")
 
     btn_classify = Button(win, text="Cluster JSON Documents", command=cluster_docs)
     btn_classify.grid(column=3, row=9, sticky=W + E + N + S, columnspan=1)
