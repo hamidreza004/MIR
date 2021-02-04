@@ -20,6 +20,7 @@ from classifiers.naive_bayes import NaiveBayes
 from classifiers.knn import KNN
 from sklearn.feature_extraction.text import TfidfVectorizer
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+import json
 
 
 def multiple(*func_list):
@@ -117,27 +118,29 @@ def convert_to_vector_space(df):
     col_name = 'title'
     for _, row in df.iterrows():
         docs.append(' '.join(row[col_name]))
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(max_features=400)
     vectors = vectorizer.fit_transform(docs)
     feature_names = vectorizer.get_feature_names()
     dense = vectors.todense()
     dense_list = dense.tolist()
-    TF_IDF_DFs = pd.DataFrame(dense_list, columns=feature_names)
+    TF_IDF_DFs = pd.DataFrame(dense_list, columns=feature_names).values.tolist()
 
-    model = Doc2Vec(min_count=1, workers=8, epochs=20, vector_size=len(feature_names))
+    model = Doc2Vec(min_count=1, workers=8, epochs=20, vector_size=100)
     card_docs = [TaggedDocument(row[col_name], [i]) for i, row in df.iterrows()]
     model.build_vocab(card_docs)
     model.train(card_docs, total_examples=model.corpus_count, epochs=model.epochs)
-    vocab = list(model.wv.vocab.keys())
-    tmp_df = pd.DataFrame(columns=vocab)
+    word2vecs = []
     for i, row in df.iterrows():
         trained = list(model.infer_vector(row[col_name]))
-        while len(trained) < len(vocab):
-            trained.append(0)
-        tmp_df.loc[i] = list(trained)
-    word2vecs = tmp_df
-    print(TF_IDF_DFs)
-    print(word2vecs)
+        word2vecs.append(trained)
+    for i in range(len(TF_IDF_DFs)):
+        for j in range(len(TF_IDF_DFs[0])):
+            TF_IDF_DFs[i][j] = str(TF_IDF_DFs[i][j])
+    for i in range(len(word2vecs)):
+        for j in range(len(word2vecs[0])):
+            word2vecs[i][j] = str(word2vecs[i][j])
+    print(len(word2vecs), len(word2vecs[0]))
+    print(len(TF_IDF_DFs), len(TF_IDF_DFs[0]))
 
 
 def configure_prepare_section(win):
@@ -174,7 +177,6 @@ def configure_prepare_section(win):
             listbox1.insert(END, i + 1)
             listbox2.insert(END, ', '.join(row['title']))
             listbox3.insert(END, ', '.join(row['description']))
-            id_to_link.append(row['link'])
 
         listbox1.pack(side=LEFT, fill=BOTH, expand=TRUE)
         listbox2.pack(side=LEFT, fill=BOTH, expand=TRUE)
@@ -265,6 +267,7 @@ def configure_prepare_section(win):
             listbox2.insert(END, ', '.join(row['summary']))
             listbox3.insert(END, row['link'])
             listbox4.insert(END, ', '.join(row['tags']))
+            id_to_link.append(row['link'])
 
         listbox0.pack(side=LEFT, fill=BOTH, expand=TRUE)
         listbox1.pack(side=LEFT, fill=BOTH, expand=TRUE)
@@ -282,6 +285,16 @@ def configure_prepare_section(win):
                 pos += 1
             tags.append(unique[category])
         convert_to_vector_space(df)
+
+        with open('IR_files/tags.txt', 'w') as f:
+            json.dump(tags, f)
+        with open('IR_files/word2vecs.txt', 'w') as f:
+            json.dump(word2vecs, f)
+        with open('IR_files/TF_IDF_DFs.txt', 'w') as f:
+            json.dump(TF_IDF_DFs, f)
+        with open('IR_files/id_to_link.txt', 'w') as f:
+            json.dump(id_to_link, f)
+
         parsed_document_window.mainloop()
         stopwords_window.mainloop()
 
@@ -678,6 +691,28 @@ def configure_classification_section(win):
     btn_test.grid(column=2, row=9, sticky=W + E + N + S, columnspan=1)
 
     def classify_docs():
+        global tags
+        global word2vecs
+        global TF_IDF_DFs
+        global id_to_link
+        with open('IR_files/tags.txt', 'r') as f:
+            tags = json.load(f)
+        with open('IR_files/word2vecs.txt', 'r') as f:
+            word2vecs = json.load(f)
+        with open('IR_files/TF_IDF_DFs.txt', 'r') as f:
+            TF_IDF_DFs = json.load(f)
+        with open('IR_files/id_to_link.txt', 'r') as f:
+            id_to_link = json.load(f)
+        for i in range(len(TF_IDF_DFs)):
+            for j in range(len(TF_IDF_DFs[0])):
+                TF_IDF_DFs[i][j] = float(TF_IDF_DFs[i][j])
+        for i in range(len(word2vecs)):
+            for j in range(len(word2vecs[0])):
+                word2vecs[i][j] = float(word2vecs[i][j])
+        print(len(word2vecs), len(word2vecs[0]))
+        print(len(TF_IDF_DFs), len(TF_IDF_DFs[0]))
+        print(max(tags))
+        print(id_to_link)
         # TODO: put armin function here then pass TF_IDF_DFs and word2vecs
         print("classify mishe ishalla")
 
