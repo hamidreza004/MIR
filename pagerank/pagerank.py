@@ -15,7 +15,9 @@ for paper in data:
     G.add_edges_from([(paper_id, ref) for ref in paper_refs])
 
 
-pr = nx.pagerank(G, 0.4)
+alpha = float(input('enter alpha:\n'))
+
+pr = nx.pagerank(G, alpha)
 
 sorted_pr = dict(sorted(pr.items(), key=lambda item: item[1]))
 print(sorted_pr)
