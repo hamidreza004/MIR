@@ -19,5 +19,5 @@ alpha = float(input('enter alpha:\n'))
 
 pr = nx.pagerank(G, alpha)
 
-sorted_pr = dict(sorted(pr.items(), key=lambda item: item[1]))
+sorted_pr = dict(sorted(pr.items(), key=lambda item: -item[1]))
 print(sorted_pr)
