@@ -22,7 +22,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from gensim.models import Word2Vec
 import json
 import numpy as np
-
+import random as rnd
 
 def multiple(*func_list):
     '''run multiple functions as one'''
@@ -126,25 +126,21 @@ def convert_to_vector_space(df, tf_idf_features, w2v_min_count, w2v_epochs, w2v_
     dense_list = dense.tolist()
     TF_IDF_DFs = pd.DataFrame(dense_list, columns=feature_names).values.tolist()
 
-    all_words = []
+    model = Doc2Vec(min_count=w2v_min_count, workers=8, epochs=w2v_epochs, vector_size=w2v_vector_size)
+    model.random.seed(0)
+    card_docs = [TaggedDocument(row[col_name], [tags[i] if rnd.randint(0,5) != 0 else 15]) for i, row in df.iterrows()]
+    model.build_vocab(card_docs)
+    model.train(card_docs, total_examples=model.corpus_count, epochs=model.epochs)
     word2vecs = []
     for i, row in df.iterrows():
-        for word in row[col_name]:
-            all_words.append(word)
-    model = Word2Vec(all_words, size=w2v_vector_size, iter=128, min_count=w2v_min_count, workers=8)
-
-    for i, row in df.iterrows():
-        word2vecs.append(list(sum(model.wv[word] * (TF_IDF_DFs[i][feature_names.index(word)] if word in feature_names else 0) if word in model.wv else np.zeros(model.vector_size) for word in row[col_name])/len(row[col_name])))
-    print(word2vecs)
-    print(len(word2vecs[0]))
-    print("hey")
+        trained = list(model.infer_vector(row[col_name]))
+        word2vecs.append(trained)
     for i in range(len(TF_IDF_DFs)):
         for j in range(len(TF_IDF_DFs[0])):
             TF_IDF_DFs[i][j] = str(TF_IDF_DFs[i][j])
     for i in range(len(word2vecs)):
         for j in range(len(word2vecs[0])):
             word2vecs[i][j] = str(word2vecs[i][j])
-
 
 def JSON_to_clustering_arrays(filename, tf_idf_features=1000, w2v_min_count=2, w2v_epochs=10, w2v_vector_size=80):
     global id_to_link
