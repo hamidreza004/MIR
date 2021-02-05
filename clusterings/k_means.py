@@ -1,16 +1,25 @@
 from sklearn.cluster import KMeans
 from sklearn import metrics
 from sklearn.metrics.cluster import contingency_matrix
+import pandas as pd
 import numpy as np
 
 
-def get_cost(vector, random_state=452, n_clusters=3):
+def get_evaluation_dataframe(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v):
+    Purity_tf, AMI_tf, NMI_tf, ARI_tf, inertia_tf = evaluate(tf_idf, tags, n_clusters=n_cluster_tf)
+    Purity_w2v, AMI_w2v, NMI_w2v, ARI_w2v, inertia_w2v = evaluate(w2v, tags, n_clusters=n_cluster_w2v)
+    return (pd.DataFrame({'Purity': [Purity_tf, Purity_w2v], 'Adjusted Mutual Info': [AMI_tf, AMI_w2v],
+                          'Normalized Mutual Info': [NMI_tf, NMI_w2v], 'Adjusted Rand Index': [ARI_tf, ARI_w2v]},
+                         index=['tf_idf', 'w2v']))
+
+
+def get_cost(vector, random_state=12, n_clusters=5):
     X = np.array(vector)
     kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10, max_iter=300, tol=1e-4).fit(X)
     return kmeans.inertia_
 
 
-def evaluate(vector, tags, random_state=452, n_clusters=5):
+def evaluate(vector, tags, n_clusters=5, random_state=12):
     X = np.array(vector)
     kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10, max_iter=300, tol=1e-4).fit(X)
     labels_true = tags
@@ -21,20 +30,29 @@ def evaluate(vector, tags, random_state=452, n_clusters=5):
     NMI = round((metrics.cluster.normalized_mutual_info_score(labels_true, labels_pred)), 6)
     ARI = round(metrics.cluster.adjusted_rand_score(labels_true, labels_pred), 6)
 
-    return Purity, AMI, NMI, ARI
+    return Purity, AMI, NMI, ARI, kmeans.inertia_
 
 
-# def get_best_randomeness(vector, tags, links):
-#     best_score = 0
-#     best_random = 0
-#     for i in range(40):
-#         score, random = k_means(vector, tags, links, i * 53, 14)
-#         if score > best_score:
-#             best_score = score
-#             best_random = random
-#         print(i)
-#
-#     print(best_score, best_random)
+def evaluate_AMI(vector, tags, n_clusters=5, random_state=12):
+    X = np.array(vector)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10, max_iter=300, tol=1e-4).fit(X)
+    labels_true = tags
+    labels_pred = kmeans.labels_
+
+    AMI = round((metrics.cluster.adjusted_mutual_info_score(labels_true, labels_pred)), 6)
+    return AMI
+
+
+def get_best_randomeness(vector, tags, n_clusters):
+    best_score = 0
+    best_random = 0
+    for i in range(40):
+        score = evaluate_AMI(vector, tags, n_clusters, i * 53)
+        if score > best_score:
+            best_score = score
+            best_random = i * 53
+        print(i)
+    print(best_score, best_random)
 
 
 def purity_score(labels_true, labels_pred):

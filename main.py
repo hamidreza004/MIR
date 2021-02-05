@@ -111,7 +111,7 @@ TF_IDF_DFs = None
 word2vecs = None
 
 
-def convert_to_vector_space(df, tf_idf_features=400, w2v_min_count=2, w2v_epochs=32, w2v_vector_size=120):
+def convert_to_vector_space(df, tf_idf_features, w2v_min_count, w2v_epochs, w2v_vector_size):
     global TF_IDF_DFs
     global word2vecs
     docs = []
@@ -142,7 +142,7 @@ def convert_to_vector_space(df, tf_idf_features=400, w2v_min_count=2, w2v_epochs
             word2vecs[i][j] = str(word2vecs[i][j])
 
 
-def JSON_to_clustering_arrays(filename, tf_idf_features=1000, w2v_min_count=2, w2v_epochs=32, w2v_vector_size=50):
+def JSON_to_clustering_arrays(filename, tf_idf_features=1000, w2v_min_count=2, w2v_epochs=10, w2v_vector_size=80):
     global id_to_link
     global tags
     global TF_IDF_DFs
