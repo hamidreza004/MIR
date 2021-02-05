@@ -1,5 +1,3 @@
-from time import sleep
-
 from consts import TOTAL_PAPERS_COUNT
 from loader import get_paper, FaultyPageException
 import json
