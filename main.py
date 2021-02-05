@@ -112,21 +112,22 @@ TF_IDF_DFs = None
 word2vecs = None
 
 
-def convert_to_vector_space(df):
+def convert_to_vector_space(df, tf_idf_features=400, w2v_min_count=2, w2v_epochs=32, w2v_vector_size=120):
     global TF_IDF_DFs
     global word2vecs
     docs = []
     col_name = 'title'
     for _, row in df.iterrows():
         docs.append(' '.join(row[col_name]))
-    vectorizer = TfidfVectorizer(max_features=400)
+    vectorizer = TfidfVectorizer(max_features=tf_idf_features)
     vectors = vectorizer.fit_transform(docs)
     feature_names = vectorizer.get_feature_names()
     dense = vectors.todense()
     dense_list = dense.tolist()
     TF_IDF_DFs = pd.DataFrame(dense_list, columns=feature_names).values.tolist()
 
-    model = Doc2Vec(min_count=2, workers=8, epochs=32, vector_size=120)
+    model = Doc2Vec(min_count=w2v_min_count, workers=8, epochs=w2v_epochs, vector_size=w2v_vector_size)
+    model.random.seed(0)
     card_docs = [TaggedDocument(row[col_name], [i]) for i, row in df.iterrows()]
     model.build_vocab(card_docs)
     model.train(card_docs, total_examples=model.corpus_count, epochs=model.epochs)
@@ -142,7 +143,7 @@ def convert_to_vector_space(df):
             word2vecs[i][j] = str(word2vecs[i][j])
 
 
-def JSON_to_clustering_arrays(filename):
+def JSON_to_clustering_arrays(filename, tf_idf_features=400, w2v_min_count=2, w2v_epochs=32, w2v_vector_size=120):
     global id_to_link
     global tags
     global TF_IDF_DFs
@@ -168,7 +169,7 @@ def JSON_to_clustering_arrays(filename):
             unique[category] = pos
             pos += 1
         tags.append(unique[category])
-    convert_to_vector_space(df)
+    convert_to_vector_space(df, tf_idf_features, w2v_min_count, w2v_epochs, w2v_vector_size)
     return TF_IDF_DFs, word2vecs, tags, id_to_link, df
 
 
@@ -730,10 +731,10 @@ def configure_classification_section(win):
             for j in range(len(word2vecs[0])):
                 word2vecs[i][j] = float(word2vecs[i][j])
 
-        get_best_randomeness(TF_IDF_DFs, tags, id_to_link)
-        get_best_randomeness(word2vecs, tags, id_to_link)
-        # k_means(TF_IDF_DFs, tags, id_to_link, 452, 5)
-        # k_means(word2vecs, tags, id_to_link, 3861, 5)
+        # get_best_randomeness(TF_IDF_DFs, tags, id_to_link)
+        # get_best_randomeness(word2vecs, tags, id_to_link)
+        k_means(TF_IDF_DFs, tags, id_to_link, 452, 5)
+        k_means(word2vecs, tags, id_to_link, 3861, 5)
         print("clustering compeleted.")
 
     btn_classify = Button(win, text="Cluster JSON Documents", command=cluster_docs)
@@ -754,6 +755,10 @@ def initial_window(win):
     configure_classification_section(win)
 
 
-window = tkinter.Tk()
-initial_window(window)
-window.mainloop()
+# window = tkinter.Tk()
+# initial_window(window)
+# window.mainloop()
+
+tf_idf, w2v, lables, links, df = JSON_to_clustering_arrays("./data/phase3/hamshahri.json")
+k_means(tf_idf, lables, links, 452, 5)
+k_means(w2v, lables, links, 3861, 5)

@@ -10,13 +10,13 @@ def k_means(vector, tags, links, random_state, n_clusters):
     labels_true = tags
     labels_pred = kmeans.labels_
 
-    # print("--------------------------------------------------------------------------")
-    # print("purity_score:", purity_score(labels_true, labels_pred))
-    # print("adjusted_mutual_info:", round((metrics.cluster.adjusted_mutual_info_score(labels_true, labels_pred)), 6))
-    # print("adjusted_rand_index:", round(metrics.cluster.adjusted_rand_score(labels_true, labels_pred), 6))
-    # print("--------------------------------------------------------------------------")
+    print("--------------------------------------------------------------------------")
+    print("purity_score:", purity_score(labels_true, labels_pred))
+    print("adjusted_mutual_info:", round((metrics.cluster.adjusted_mutual_info_score(labels_true, labels_pred)), 6))
+    print("adjusted_rand_index:", round(metrics.cluster.adjusted_rand_score(labels_true, labels_pred), 6))
+    print("--------------------------------------------------------------------------")
 
-    return round((metrics.cluster.adjusted_mutual_info_score(labels_true, labels_pred)), 6), random_state
+    # return round((metrics.cluster.adjusted_mutual_info_score(labels_true, labels_pred)), 6), random_state
 
 
 def get_best_randomeness(vector, tags, links):
