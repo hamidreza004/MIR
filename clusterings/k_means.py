@@ -21,9 +21,32 @@ def get_advanced_results(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v):
     return df, random_tf, random_w2v
 
 
-def get_evaluation_dataframe(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v):
-    Purity_tf, AMI_tf, NMI_tf, ARI_tf, inertia_tf = evaluate(tf_idf, tags, n_clusters=n_cluster_tf)
-    Purity_w2v, AMI_w2v, NMI_w2v, ARI_w2v, inertia_w2v = evaluate(w2v, tags, n_clusters=n_cluster_w2v)
+def evaluate_n_init(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_state_tf, random_state_w2v, n_inits):
+    DFs = []
+    for n_init in n_inits:
+        DFs.append(
+            get_evaluation_dataframe(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_state_tf=random_state_tf,
+                                     random_state_w2v=random_state_w2v, n_init=n_init))
+    return DFs
+
+
+def evaluate_max_iter(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_state_tf, random_state_w2v, max_iters):
+    DFs = []
+    for max_iter in max_iters:
+        DFs.append(
+            get_evaluation_dataframe(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_state_tf=random_state_tf,
+                                     random_state_w2v=random_state_w2v, max_iter=max_iter))
+    return DFs
+
+
+def get_evaluation_dataframe(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_state_tf=12, random_state_w2v=12,
+                             n_init=10, max_iter=300):
+    Purity_tf, AMI_tf, NMI_tf, ARI_tf, inertia_tf = evaluate(tf_idf, tags, n_clusters=n_cluster_tf,
+                                                             random_state=random_state_tf, n_init=n_init,
+                                                             max_iter=max_iter)
+    Purity_w2v, AMI_w2v, NMI_w2v, ARI_w2v, inertia_w2v = evaluate(w2v, tags, n_clusters=n_cluster_w2v,
+                                                                  random_state=random_state_w2v, n_init=n_init,
+                                                                  max_iter=max_iter)
     return (pd.DataFrame({'Purity': [Purity_tf, Purity_w2v], 'Adjusted Mutual Info': [AMI_tf, AMI_w2v],
                           'Normalized Mutual Info': [NMI_tf, NMI_w2v], 'Adjusted Rand Index': [ARI_tf, ARI_w2v],
                           'Inertia': [inertia_tf, inertia_w2v]},
@@ -36,9 +59,9 @@ def get_cost(vector, random_state=12, n_clusters=5):
     return kmeans.inertia_
 
 
-def evaluate(vector, tags, n_clusters=5, random_state=12):
+def evaluate(vector, tags, n_clusters=5, random_state=12, n_init=10, max_iter=300):
     X = np.array(vector)
-    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10, max_iter=300, tol=1e-4).fit(X)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=n_init, max_iter=max_iter, tol=1e-4).fit(X)
     labels_true = tags
     labels_pred = kmeans.labels_
 
@@ -86,9 +109,9 @@ def PCA2_plot(vectors, n_clusters, random_state, labels_true, title):
     labels_pred = get_labels(vectors, n_clusters=n_clusters, random_state=random_state)
     pca_reduction = PCA(2, random_state=12).fit_transform(vectors)
     fig, axes = plt.subplots(1, 2, figsize=(28, 8))
-    axes[0].scatter(pca_reduction[:, 0], pca_reduction[:, 1], c=labels_pred, cmap='viridis')
+    axes[0].scatter(pca_reduction[:, 0], pca_reduction[:, 1], c=labels_pred, cmap='plasma')
     axes[0].set_title('Prediction')
-    axes[1].scatter(pca_reduction[:, 0], pca_reduction[:, 1], c=labels_true, cmap='viridis')
+    axes[1].scatter(pca_reduction[:, 0], pca_reduction[:, 1], c=labels_true, cmap='plasma')
     axes[1].set_title('Ground Truth')
     fig.suptitle(title)
     plt.grid()
