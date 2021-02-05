@@ -19,11 +19,8 @@ from classifiers.svm import SVM
 from classifiers.naive_bayes import NaiveBayes
 from classifiers.knn import KNN
 from sklearn.feature_extraction.text import TfidfVectorizer
-from gensim.models import Word2Vec
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import json
-import numpy as np
-import random as rnd
-
 
 def multiple(*func_list):
     '''run multiple functions as one'''
