@@ -19,8 +19,9 @@ from classifiers.svm import SVM
 from classifiers.naive_bayes import NaiveBayes
 from classifiers.knn import KNN
 from sklearn.feature_extraction.text import TfidfVectorizer
-from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+from gensim.models import Word2Vec
 import json
+import numpy as np
 
 
 def multiple(*func_list):
@@ -125,21 +126,24 @@ def convert_to_vector_space(df, tf_idf_features, w2v_min_count, w2v_epochs, w2v_
     dense_list = dense.tolist()
     TF_IDF_DFs = pd.DataFrame(dense_list, columns=feature_names).values.tolist()
 
-    model = Doc2Vec(min_count=w2v_min_count, workers=8, epochs=w2v_epochs, vector_size=w2v_vector_size)
-    model.random.seed(0)
-    card_docs = [TaggedDocument(row[col_name], [tags[i]]) for i, row in df.iterrows()]
-    model.build_vocab(card_docs)
-    model.train(card_docs, total_examples=model.corpus_count, epochs=model.epochs)
+    all_words = []
     word2vecs = []
     for i, row in df.iterrows():
-        trained = list(model.infer_vector(row[col_name]))
-        word2vecs.append(trained)
+        for word in row[col_name]:
+            all_words.append(word)
+    model = Word2Vec(all_words, size=w2v_vector_size, iter=128, min_count=w2v_min_count, workers=8)
+
+    for i, row in df.iterrows():
+        word2vecs.append(
+                np.mean([model.wv[word] for word in row[col_name] if word in model.wv] or [np.zeros(model.vector_size)],
+                        axis=0).tolist())
     for i in range(len(TF_IDF_DFs)):
         for j in range(len(TF_IDF_DFs[0])):
             TF_IDF_DFs[i][j] = str(TF_IDF_DFs[i][j])
     for i in range(len(word2vecs)):
         for j in range(len(word2vecs[0])):
             word2vecs[i][j] = str(word2vecs[i][j])
+    print(word2vecs)
 
 
 def JSON_to_clustering_arrays(filename, tf_idf_features=1000, w2v_min_count=2, w2v_epochs=10, w2v_vector_size=80):
@@ -752,6 +756,6 @@ def initial_window(win):
     configure_classification_section(win)
 
 
-# window = tkinter.Tk()
-# initial_window(window)
-# window.mainloop()
+window = tkinter.Tk()
+initial_window(window)
+window.mainloop()
