@@ -134,16 +134,16 @@ def convert_to_vector_space(df, tf_idf_features, w2v_min_count, w2v_epochs, w2v_
     model = Word2Vec(all_words, size=w2v_vector_size, iter=128, min_count=w2v_min_count, workers=8)
 
     for i, row in df.iterrows():
-        word2vecs.append(
-                np.mean([model.wv[word] for word in row[col_name] if word in model.wv] or [np.zeros(model.vector_size)],
-                        axis=0).tolist())
+        word2vecs.append((np.sum(model.wv[word] if word in model.wv else np.zeros(model.vector_size) for word in row[col_name])/len(row[col_name])).tolist())
+    print(len(word2vecs))
+    print(len(word2vecs[0]))
+    print("hey")
     for i in range(len(TF_IDF_DFs)):
         for j in range(len(TF_IDF_DFs[0])):
             TF_IDF_DFs[i][j] = str(TF_IDF_DFs[i][j])
     for i in range(len(word2vecs)):
         for j in range(len(word2vecs[0])):
             word2vecs[i][j] = str(word2vecs[i][j])
-    print(word2vecs)
 
 
 def JSON_to_clustering_arrays(filename, tf_idf_features=1000, w2v_min_count=2, w2v_epochs=10, w2v_vector_size=80):
