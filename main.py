@@ -134,8 +134,8 @@ def convert_to_vector_space(df, tf_idf_features, w2v_min_count, w2v_epochs, w2v_
     model = Word2Vec(all_words, size=w2v_vector_size, iter=128, min_count=w2v_min_count, workers=8)
 
     for i, row in df.iterrows():
-        word2vecs.append(list(sum(model.wv[word] if word in model.wv else np.zeros(model.vector_size) for word in row[col_name])/len(row[col_name])))
-    print(len(word2vecs))
+        word2vecs.append(list(sum(model.wv[word] * (TF_IDF_DFs[i][feature_names.index(word)] if word in feature_names else 0) if word in model.wv else np.zeros(model.vector_size) for word in row[col_name])/len(row[col_name])))
+    print(word2vecs)
     print(len(word2vecs[0]))
     print("hey")
     for i in range(len(TF_IDF_DFs)):
