@@ -751,6 +751,6 @@ def initial_window(win):
     configure_classification_section(win)
 
 
-window = tkinter.Tk()
-initial_window(window)
-window.mainloop()
+# window = tkinter.Tk()
+# initial_window(window)
+# window.mainloop()
