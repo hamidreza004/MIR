@@ -142,7 +142,7 @@ def convert_to_vector_space(df):
             word2vecs[i][j] = str(word2vecs[i][j])
 
 
-def JSON_to_classification_arrays(filename):
+def JSON_to_clustering_arrays(filename):
     global id_to_link
     global tags
     global TF_IDF_DFs
@@ -169,7 +169,7 @@ def JSON_to_classification_arrays(filename):
             pos += 1
         tags.append(unique[category])
     convert_to_vector_space(df)
-    return id_to_link, tags, TF_IDF_DFs, word2vecs, df
+    return TF_IDF_DFs, word2vecs, tags, id_to_link, df
 
 
 def configure_prepare_section(win):
@@ -270,7 +270,7 @@ def configure_prepare_section(win):
         global word2vecs
         print("Loading...")
         filename = filedialog.askopenfilename()
-        id_to_link, tags, TF_IDF_DFs, word2vecs, df = JSON_to_classification_arrays(filename)
+        TF_IDF_DFs, word2vecs, tags, id_to_link, df = JSON_to_clustering_arrays(filename)
         with open('IR_files/tags.txt', 'w') as f:
             json.dump(tags, f)
         with open('IR_files/word2vecs.txt', 'w') as f:
