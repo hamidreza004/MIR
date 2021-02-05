@@ -60,7 +60,7 @@ def evaluate_AMI(vector, tags, n_clusters=5, random_state=12):
 def get_best_randomeness(vector, tags, n_clusters):
     best_score = 0
     best_random = 0
-    for i in range(40):
+    for i in range(10):
         score = evaluate_AMI(vector, tags, n_clusters, i * 53)
         if score > best_score:
             best_score = score
