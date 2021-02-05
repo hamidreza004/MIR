@@ -21,7 +21,6 @@ from classifiers.knn import KNN
 from sklearn.feature_extraction.text import TfidfVectorizer
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import json
-from clusterings.k_means import k_means, get_best_randomeness
 
 
 def multiple(*func_list):
@@ -143,7 +142,7 @@ def convert_to_vector_space(df, tf_idf_features=400, w2v_min_count=2, w2v_epochs
             word2vecs[i][j] = str(word2vecs[i][j])
 
 
-def JSON_to_clustering_arrays(filename, tf_idf_features=400, w2v_min_count=2, w2v_epochs=32, w2v_vector_size=120):
+def JSON_to_clustering_arrays(filename, tf_idf_features=1000, w2v_min_count=2, w2v_epochs=32, w2v_vector_size=50):
     global id_to_link
     global tags
     global TF_IDF_DFs
@@ -731,10 +730,8 @@ def configure_classification_section(win):
             for j in range(len(word2vecs[0])):
                 word2vecs[i][j] = float(word2vecs[i][j])
 
-        # get_best_randomeness(TF_IDF_DFs, tags, id_to_link)
-        # get_best_randomeness(word2vecs, tags, id_to_link)
-        k_means(TF_IDF_DFs, tags, id_to_link, 452, 5)
-        k_means(word2vecs, tags, id_to_link, 3861, 5)
+        # k_means(TF_IDF_DFs, tags, 452, 5)
+        # k_means(word2vecs, tags, 3861, 5)
         print("clustering compeleted.")
 
     btn_classify = Button(win, text="Cluster JSON Documents", command=cluster_docs)
@@ -758,7 +755,3 @@ def initial_window(win):
 # window = tkinter.Tk()
 # initial_window(window)
 # window.mainloop()
-
-tf_idf, w2v, lables, links, df = JSON_to_clustering_arrays("./data/phase3/hamshahri.json")
-k_means(tf_idf, lables, links, 452, 5)
-k_means(w2v, lables, links, 3861, 5)
