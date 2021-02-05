@@ -129,7 +129,7 @@ def convert_to_vector_space(df, tf_idf_features, w2v_min_count, w2v_epochs, w2v_
 
     model = Doc2Vec(min_count=w2v_min_count, workers=8, epochs=w2v_epochs, vector_size=w2v_vector_size)
     model.random.seed(0)
-    card_docs = [TaggedDocument(row[col_name], [tags[i] if rnd.randint(0, 5) != 0 else 15]) for i, row in df.iterrows()]
+    card_docs = [TaggedDocument(row[col_name], [tags[i]]) for i, row in df.iterrows()]
     model.build_vocab(card_docs)
     model.train(card_docs, total_examples=model.corpus_count, epochs=model.epochs)
     word2vecs = []
