@@ -5,11 +5,25 @@ import pandas as pd
 import numpy as np
 
 
+def get_advanced_results(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v):
+    random_tf = get_best_randomeness(tf_idf, tags, n_cluster_tf)
+    random_w2v = get_best_randomeness(w2v, tags, n_cluster_w2v)
+    Purity_tf, AMI_tf, NMI_tf, ARI_tf, inertia_tf = evaluate(tf_idf, tags, n_clusters=n_cluster_tf,
+                                                             random_state=random_tf)
+    Purity_w2v, AMI_w2v, NMI_w2v, ARI_w2v, inertia_w2v = evaluate(w2v, tags, n_clusters=n_cluster_w2v,
+                                                                  random_state=random_w2v)
+    return (pd.DataFrame({'Purity': [Purity_tf, Purity_w2v], 'Adjusted Mutual Info': [AMI_tf, AMI_w2v],
+                          'Normalized Mutual Info': [NMI_tf, NMI_w2v], 'Adjusted Rand Index': [ARI_tf, ARI_w2v],
+                          'Inertia': [inertia_tf, inertia_w2v]},
+                         index=['tf_idf', 'w2v']))
+
+
 def get_evaluation_dataframe(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v):
     Purity_tf, AMI_tf, NMI_tf, ARI_tf, inertia_tf = evaluate(tf_idf, tags, n_clusters=n_cluster_tf)
     Purity_w2v, AMI_w2v, NMI_w2v, ARI_w2v, inertia_w2v = evaluate(w2v, tags, n_clusters=n_cluster_w2v)
     return (pd.DataFrame({'Purity': [Purity_tf, Purity_w2v], 'Adjusted Mutual Info': [AMI_tf, AMI_w2v],
-                          'Normalized Mutual Info': [NMI_tf, NMI_w2v], 'Adjusted Rand Index': [ARI_tf, ARI_w2v]},
+                          'Normalized Mutual Info': [NMI_tf, NMI_w2v], 'Adjusted Rand Index': [ARI_tf, ARI_w2v],
+                          'Inertia': [inertia_tf, inertia_w2v]},
                          index=['tf_idf', 'w2v']))
 
 
@@ -51,8 +65,7 @@ def get_best_randomeness(vector, tags, n_clusters):
         if score > best_score:
             best_score = score
             best_random = i * 53
-        print(i)
-    print(best_score, best_random)
+    return best_random
 
 
 def purity_score(labels_true, labels_pred):
