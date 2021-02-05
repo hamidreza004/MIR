@@ -27,7 +27,11 @@ def evaluate_n_init(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_state
         DFs.append(
             get_evaluation_dataframe(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_state_tf=random_state_tf,
                                      random_state_w2v=random_state_w2v, n_init=n_init))
-    return DFs
+
+    r1 = pd.concat(DFs, ignore_index=True)
+    r2 = (pd.DataFrame({'n_init': [5, 5, 10, 10, 20, 20, 30, 30],
+                        'vector': ['tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v']}))
+    return pd.concat([r2, r1], axis=1, ignore_index=False).reindex([0, 2, 4, 6, 1, 3, 5, 7]).set_index('vector')
 
 
 def evaluate_max_iter(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_state_tf, random_state_w2v, max_iters):
@@ -36,7 +40,11 @@ def evaluate_max_iter(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_sta
         DFs.append(
             get_evaluation_dataframe(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_state_tf=random_state_tf,
                                      random_state_w2v=random_state_w2v, max_iter=max_iter))
-    return DFs
+
+    r1 = pd.concat(DFs, ignore_index=True)
+    r2 = (pd.DataFrame({'n_init': [50, 50, 100, 100, 300, 300, 500, 500],
+                        'vector': ['tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v']}))
+    return pd.concat([r2, r1], axis=1, ignore_index=False).reindex([0, 2, 4, 6, 1, 3, 5, 7]).set_index('vector')
 
 
 def get_evaluation_dataframe(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_state_tf=12, random_state_w2v=12,
