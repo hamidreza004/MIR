@@ -20,7 +20,9 @@ from classifiers.naive_bayes import NaiveBayes
 from classifiers.knn import KNN
 from sklearn.feature_extraction.text import TfidfVectorizer
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+import random
 import json
+
 
 def multiple(*func_list):
     '''run multiple functions as one'''
@@ -126,7 +128,13 @@ def convert_to_vector_space(df, tf_idf_features, w2v_min_count, w2v_epochs, w2v_
 
     model = Doc2Vec(min_count=w2v_min_count, workers=8, epochs=w2v_epochs, vector_size=w2v_vector_size)
     model.random.seed(0)
-    card_docs = [TaggedDocument(row[col_name], [tags[i]]) for i, row in df.iterrows()]
+    card_docs = []
+    for i, row in df.iterrows():
+        if i % 3 == 0:
+            card_docs.append(TaggedDocument(row[col_name], [tags[i]]))
+        else:
+            card_docs.append(TaggedDocument(row[col_name], [i]))
+    # card_docs = [TaggedDocument(row[col_name], [tags[i]]) for i, row in df.iterrows()]
     model.build_vocab(card_docs)
     model.train(card_docs, total_examples=model.corpus_count, epochs=model.epochs)
     word2vecs = []
@@ -749,7 +757,6 @@ def initial_window(win):
     configure_correct_query_section(win, entry_query)
     configure_search_section(win, entry_query)
     configure_classification_section(win)
-
 
 # window = tkinter.Tk()
 # initial_window(window)
