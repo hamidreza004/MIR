@@ -30,7 +30,8 @@ def evaluate_n_init(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_state
 
     r1 = pd.concat(DFs, ignore_index=True)
     r2 = (pd.DataFrame({'n_init': [1, 1, 5, 5, 10, 10, 20, 20, 30, 30],
-                        'vector': ['tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v']}))
+                        'vector': ['tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf',
+                                   'w2v']}))
     return pd.concat([r2, r1], axis=1, ignore_index=False).reindex([0, 2, 4, 6, 8, 1, 3, 5, 7, 9]).set_index('vector')
 
 
@@ -43,7 +44,8 @@ def evaluate_max_iter(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_sta
 
     r1 = pd.concat(DFs, ignore_index=True)
     r2 = (pd.DataFrame({'n_init': [10, 10, 50, 50, 100, 100, 300, 300, 500, 500],
-                        'vector': ['tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v']}))
+                        'vector': ['tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf',
+                                   'w2v']}))
     return pd.concat([r2, r1], axis=1, ignore_index=False).reindex([0, 2, 4, 6, 8, 1, 3, 5, 7, 9]).set_index('vector')
 
 
@@ -124,3 +126,37 @@ def PCA2_plot(vectors, n_clusters, random_state, labels_true, title):
     fig.suptitle(title)
     plt.grid()
     plt.show()
+
+
+def final(tf_idf, tf_param, w2v, w2v_param, tags, links):
+    Purity_tf, AMI_tf, NMI_tf, ARI_tf, labels_pred_tf = final_evaluate(tf_idf, tags, tf_param['n_clusters'],
+                                                                       tf_param['random_state'], tf_param['n_init'],
+                                                                       tf_param['max_iter'])
+    Purity_w2v, AMI_w2v, NMI_w2v, ARI_w2v, labels_pred_w2v = final_evaluate(w2v, tags, w2v_param['n_clusters'],
+                                                                            w2v_param['random_state'],
+                                                                            w2v_param['n_init'],
+                                                                            w2v_param['max_iter'])
+    save_csv(links, labels_pred_tf, labels_pred_w2v)
+    return (pd.DataFrame(
+        {'method': ['Kmeans', 'Kmeans'], 'vector': ['tf_idf', 'w2v'], 'Purity': [Purity_tf, Purity_w2v],
+         'Adjusted Mutual Info': [AMI_tf, AMI_w2v], 'Normalized Mutual Info': [NMI_tf, NMI_w2v],
+         'Adjusted Rand Index': [ARI_tf, ARI_w2v]}))
+
+
+def final_evaluate(vector, tags, n_clusters, random_state, n_init, max_iter):
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=n_init, max_iter=max_iter, tol=1e-4).fit(
+        np.array(vector))
+    labels_true = tags
+    labels_pred = kmeans.labels_
+    Purity = round(purity_score(labels_true, labels_pred), 6)
+    AMI = round((metrics.cluster.adjusted_mutual_info_score(labels_true, labels_pred)), 6)
+    NMI = round((metrics.cluster.normalized_mutual_info_score(labels_true, labels_pred)), 6)
+    ARI = round(metrics.cluster.adjusted_rand_score(labels_true, labels_pred), 6)
+    return Purity, AMI, NMI, ARI, kmeans.labels_
+
+
+def save_csv(links, labels_pred_tf, labels_pred_w2v):
+    pd.DataFrame({'link': links, 'predicted label': labels_pred_tf}).to_csv(
+        "reports/phase3/csv_files/kmeans_tfidf.csv")
+    pd.DataFrame({'link': links, 'predicted label': labels_pred_w2v}).to_csv(
+        "reports/phase3/csv_files/kmeans_w2v.csv")

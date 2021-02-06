@@ -113,3 +113,24 @@ def PCA2_plot(vectors, labels_pred, labels_true, title):
     fig.suptitle(title)
     plt.grid()
     plt.show()
+
+
+def final(tf_idf, tf_param, w2v, w2v_param, tags, links):
+    Purity_tf, AMI_tf, NMI_tf, ARI_tf, labels_pred_tf = evaluate(tf_idf, tags, tf_param['n_components'],
+                                                                 tf_param['covariance_type'],
+                                                                 tf_param['max_iter'])
+    Purity_w2v, AMI_w2v, NMI_w2v, ARI_w2v, labels_pred_w2v = evaluate(w2v, tags, w2v_param['n_components'],
+                                                                      w2v_param['covariance_type'],
+                                                                      w2v_param['max_iter'])
+    save_csv(links, labels_pred_tf, labels_pred_w2v)
+    return (pd.DataFrame(
+        {'method': ['GMM', 'GMM'], 'vector': ['tf_idf', 'w2v'], 'Purity': [Purity_tf, Purity_w2v],
+         'Adjusted Mutual Info': [AMI_tf, AMI_w2v], 'Normalized Mutual Info': [NMI_tf, NMI_w2v],
+         'Adjusted Rand Index': [ARI_tf, ARI_w2v]}))
+
+
+def save_csv(links, labels_pred_tf, labels_pred_w2v):
+    pd.DataFrame({'link': links, 'predicted label': labels_pred_tf}).to_csv(
+        "reports/phase3/csv_files/gmm_tfidf.csv")
+    pd.DataFrame({'link': links, 'predicted label': labels_pred_w2v}).to_csv(
+        "reports/phase3/csv_files/gmm_w2v.csv")

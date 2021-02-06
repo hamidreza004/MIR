@@ -111,10 +111,29 @@ def plot_dendrogram(model, **kwargs):
     dendrogram(linkage_matrix, **kwargs)
 
 
-def show_dendrogram(vector, n_clusters, linkage, affinity, level):
+def show_dendrogram(vector, linkage, affinity):
     plt.title('Hierarchical Clustering Dendrogram')
     clustering = AgglomerativeClustering(n_clusters=None, linkage=linkage, affinity=affinity,
                                          distance_threshold=1e-3).fit(vector)
-    plot_dendrogram(clustering, truncate_mode='level', p=level)
+    plot_dendrogram(clustering, truncate_mode='level', p=3)
     plt.xlabel("Number of points in node (or index of point if no parenthesis).")
     plt.show()
+
+
+def final(tf_idf, tf_param, w2v, w2v_param, tags, links):
+    Purity_tf, AMI_tf, NMI_tf, ARI_tf, labels_pred_tf = evaluate(tf_idf, tags, tf_param['n_clusters'],
+                                                                 tf_param['linkage'], tf_param['affinity'])
+    Purity_w2v, AMI_w2v, NMI_w2v, ARI_w2v, labels_pred_w2v = evaluate(w2v, tags, w2v_param['n_clusters'],
+                                                                      w2v_param['linkage'], w2v_param['affinity'])
+    save_csv(links, labels_pred_tf, labels_pred_w2v)
+    return (pd.DataFrame(
+        {'method': ['Hierarchical', 'Hierarchical'], 'vector': ['tf_idf', 'w2v'], 'Purity': [Purity_tf, Purity_w2v],
+         'Adjusted Mutual Info': [AMI_tf, AMI_w2v], 'Normalized Mutual Info': [NMI_tf, NMI_w2v],
+         'Adjusted Rand Index': [ARI_tf, ARI_w2v]}))
+
+
+def save_csv(links, labels_pred_tf, labels_pred_w2v):
+    pd.DataFrame({'link': links, 'predicted label': labels_pred_tf}).to_csv(
+        "reports/phase3/csv_files/hierarchical_tfidf.csv")
+    pd.DataFrame({'link': links, 'predicted label': labels_pred_w2v}).to_csv(
+        "reports/phase3/csv_files/hierarchical_w2v.csv")
