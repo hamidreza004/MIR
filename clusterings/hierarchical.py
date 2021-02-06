@@ -33,7 +33,6 @@ def get_result_df(tf_idf, w2v, tags):
                     result.append([vector, n_cluster, linkage, affinity, score_Purity, 'Purity'])
                     result.append([vector, n_cluster, linkage, affinity, score_NMI, 'NMI'])
                     result.append([vector, n_cluster, linkage, affinity, score_ARI, 'ARI'])
-                    print(len(result) / 4)
 
     return pd.DataFrame(data=result, columns=['vector', 'n_clusters', 'linkage', 'affinity', 'score', 'metric'])
 

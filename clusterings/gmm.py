@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 def get_result_df(tf_idf, w2v, tags):
     vectors = ['tf_idf', 'w2v']
-    n_components = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    n_components = [5, 8, 9, 10, 11, 12, 13, 14, 15]
     covariance_types = ['full', 'tied', 'diag', 'spherical']
     max_iters = [100]
 
@@ -30,7 +30,6 @@ def get_result_df(tf_idf, w2v, tags):
                     result.append([vector, n_component, covariance_type, max_iter, score_Purity, 'Purity'])
                     result.append([vector, n_component, covariance_type, max_iter, score_NMI, 'NMI'])
                     result.append([vector, n_component, covariance_type, max_iter, score_ARI, 'ARI'])
-                    print(len(result) / 4)
 
     return pd.DataFrame(data=result,
                         columns=['vector', 'n_components', 'covariance_type', 'max_iter', 'score', 'metric'])
