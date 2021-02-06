@@ -2,7 +2,59 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.cluster.hierarchy import dendrogram
 from sklearn.cluster import AgglomerativeClustering
-from sklearn.datasets import load_iris
+import pandas as pd
+from sklearn import metrics
+from sklearn.metrics.cluster import contingency_matrix
+
+
+def get_result_df(tf_idf, w2v, tags):
+    vectors = ['tf_idf', 'w2v']
+    n_clusters = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    linkages = ['ward', 'complete', 'average', 'single ']
+    affinitys = ['euclidean', 'l1', 'l2', 'manhattan', 'cosine']
+
+    result = []
+    for vector in vectors:
+        for n_cluster in n_clusters:
+            for linkage in linkages:
+                for affinity in affinitys:
+                    if linkage == 'ward' and affinity != 'euclidiean':
+                        continue
+                    if vector == 'tf_idf':
+                        score_AMI = get_AMI(tf_idf, tags, n_cluster, linkage, affinity)
+                        score_Purity, score_NMI, score_ARI = get_others(tf_idf, tags, n_cluster, linkage,
+                                                                        affinity)
+                    elif vector == 'w2v':
+                        score_AMI = get_AMI(w2v, tags, n_cluster, linkage, affinity)
+                        score_Purity, score_NMI, score_ARI = get_others(w2v, tags, n_cluster, linkage,
+                                                                        affinity)
+                    result.append([vector, n_cluster, linkage, affinity, score_AMI, 'AMI'])
+                    result.append([vector, n_cluster, linkage, affinity, score_Purity, 'Purity'])
+                    result.append([vector, n_cluster, linkage, affinity, score_NMI, 'NMI'])
+                    result.append([vector, n_cluster, linkage, affinity, score_ARI, 'ARI'])
+                    print(len(result) / 4)
+
+    return pd.DataFrame(data=result, columns=['vector', 'n_clusters', 'linkage', 'affinity', 'score', 'metric'])
+
+
+def get_AMI(vector, tags, n_clusters, linkage, affinity, random_state=12):
+    clustering = AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage, affinity=affinity,
+                                         random_state=random_state).fit(vector)
+    labels_true = tags
+    labels_pred = clustering.labels_
+    AMI = round((metrics.cluster.adjusted_mutual_info_score(labels_true, labels_pred)), 6)
+    return AMI
+
+
+def get_others(vector, tags, n_clusters, linkage, affinity, random_state=12):
+    clustering = AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage, affinity=affinity,
+                                         random_state=random_state).fit(vector)
+    labels_true = tags
+    labels_pred = clustering.labels_
+    Purity = round(purity_score(labels_true, labels_pred), 6)
+    NMI = round((metrics.cluster.normalized_mutual_info_score(labels_true, labels_pred)), 6)
+    ARI = round(metrics.cluster.adjusted_rand_score(labels_true, labels_pred), 6)
+    return Purity, NMI, ARI
 
 
 def plot_dendrogram(model, **kwargs):
@@ -21,25 +73,12 @@ def plot_dendrogram(model, **kwargs):
     dendrogram(linkage_matrix, **kwargs)
 
 
-X = np.array([[1, 2], [1, 4], [1, 0], [4, 2], [4, 4], [4, 0]])
+def purity_score(labels_true, labels_pred):
+    matrix = contingency_matrix(labels_true, labels_pred)
+    return np.sum(np.amax(matrix, axis=0)) / np.sum(matrix)
 
-# linkage{‘ward’, ‘complete’, ‘average’, ‘single’}, default=’ward’
-# ward’ minimizes the variance of the clusters being merged.
-#
-# ‘average’ uses the average of the distances of each observation of the two sets.
-#
-# ‘complete’ or ‘maximum’ linkage uses the maximum distances between all observations of the two sets.
-#
-# ‘single’ uses the minimum of the distances between all observations of the two sets.
-
-
-# Can be “euclidean”, “l1”, “l2”, “manhattan”, “cosine”. If linkage is “ward”, only “euclidean” is accepted.
-clustering = AgglomerativeClustering(n_clusters=None, linkage='ward', affinity='euclidean', distance_threshold=0.1).fit(X)
-
-# print(clustering.labels_)
-
-plt.title('Hierarchical Clustering Dendrogram')
-# plot the top three levels of the dendrogram
-plot_dendrogram(clustering, truncate_mode='level', p=3)
-plt.xlabel("Number of points in node (or index of point if no parenthesis).")
-plt.show()
+# plt.title('Hierarchical Clustering Dendrogram')
+# # plot the top three levels of the dendrogram
+# plot_dendrogram(clustering, truncate_mode='level', p=3)
+# plt.xlabel("Number of points in node (or index of point if no parenthesis).")
+# plt.show()
