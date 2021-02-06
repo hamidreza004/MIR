@@ -43,7 +43,7 @@ def evaluate_max_iter(tf_idf, w2v, tags, n_cluster_tf, n_cluster_w2v, random_sta
                                      random_state_w2v=random_state_w2v, max_iter=max_iter))
 
     r1 = pd.concat(DFs, ignore_index=True)
-    r2 = (pd.DataFrame({'n_init': [10, 10, 50, 50, 100, 100, 300, 300, 500, 500],
+    r2 = (pd.DataFrame({'max_iter': [10, 10, 50, 50, 100, 100, 300, 300, 500, 500],
                         'vector': ['tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf', 'w2v', 'tf_idf',
                                    'w2v']}))
     return pd.concat([r2, r1], axis=1, ignore_index=False).reindex([0, 2, 4, 6, 8, 1, 3, 5, 7, 9]).set_index('vector')
