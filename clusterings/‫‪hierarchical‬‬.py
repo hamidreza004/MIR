@@ -40,6 +40,6 @@ clustering = AgglomerativeClustering(n_clusters=None, linkage='ward', affinity='
 
 plt.title('Hierarchical Clustering Dendrogram')
 # plot the top three levels of the dendrogram
-plot_dendrogram(clustering, truncate_mode='level', p=5)
+plot_dendrogram(clustering, truncate_mode='level', p=3)
 plt.xlabel("Number of points in node (or index of point if no parenthesis).")
 plt.show()
